@@ -1,10 +1,202 @@
-const products=[{id:"demo-buckwheat",name:"Buckwheat",category:"Grains",description:"Versatile everyday grain.",price:0,unit:"pack",initial:"B"},{id:"demo-borodino",name:"Borodino Bread",category:"Bakery",description:"Traditional dark rye-style bread.",price:72500,unit:"400 g",initial:"BB"},{id:"demo-sourdough",name:"Sourdough Bread",category:"Bakery",description:"Naturally fermented bread.",price:0,unit:"piece",initial:"S"},{id:"demo-flour",name:"Gluten Free Flour",category:"Flour",description:"A pantry staple from Naturalife.",price:0,unit:"pack",initial:"GF"}];
-const tr={en:{eyebrow:"GOOD FOOD · BETTER EVERYDAY",heroTitle:"Simple choices.<br><em>Feel-good living.</em>",heroText:"Discover quality ingredients and thoughtfully selected food products from Naturalife Bali.",browse:"Explore the catalog ↓",ourSelection:"OUR SELECTION",catalogTitle:"Shop the catalog",yourOrder:"YOUR ORDER",cartTitle:"Shopping cart",subtotal:"Subtotal",shippingNote:"Shipping is calculated and confirmed manually by our team.",checkout:"Continue to checkout",deliveryDetails:"DELIVERY DETAILS",checkoutTitle:"Almost there",fullName:"Full name",address:"Full delivery address",city:"City / District",postal:"Postal code",courier:"Preferred delivery",payment:"Payment preference",instructions:"Delivery instructions (optional)",shippingDisclaimer:"Shipping and payment details will be confirmed by admin via WhatsApp after stock checking.",submitOrder:"Submit order request",add:"Add",all:"All",search:"Search products…",empty:"Your cart is empty."},id:{eyebrow:"MAKAN BAIK · HIDUP LEBIH BAIK",heroTitle:"Pilihan sederhana.<br><em>Hidup lebih sehat.</em>",heroText:"Temukan bahan makanan berkualitas dan produk pilihan dari Naturalife Bali.",browse:"Jelajahi katalog ↓",ourSelection:"PILIHAN KAMI",catalogTitle:"Belanja katalog",yourOrder:"PESANAN ANDA",cartTitle:"Keranjang belanja",subtotal:"Subtotal",shippingNote:"Ongkir dihitung dan dikonfirmasi manual oleh tim kami.",checkout:"Lanjut ke checkout",deliveryDetails:"DETAIL PENGIRIMAN",checkoutTitle:"Hampir selesai",fullName:"Nama lengkap",address:"Alamat pengiriman lengkap",city:"Kota / Kecamatan",postal:"Kode pos",courier:"Pilihan pengiriman",payment:"Preferensi pembayaran",instructions:"Petunjuk pengiriman (opsional)",shippingDisclaimer:"Ongkir dan pembayaran akan dikonfirmasi admin melalui WhatsApp setelah pengecekan stok.",submitOrder:"Kirim permintaan pesanan",add:"Tambah",all:"Semua",search:"Cari produk…",empty:"Keranjang masih kosong."},ru:{eyebrow:"ХОРОШАЯ ЕДА · ЛУЧШЕ КАЖДЫЙ ДЕНЬ",heroTitle:"Простой выбор.<br><em>Хорошее самочувствие.</em>",heroText:"Качественные ингредиенты и продукты Naturalife Bali.",browse:"Открыть каталог ↓",ourSelection:"НАШ ВЫБОР",catalogTitle:"Каталог товаров",yourOrder:"ВАШ ЗАКАЗ",cartTitle:"Корзина",subtotal:"Подытог",shippingNote:"Доставка рассчитывается и подтверждается вручную.",checkout:"Перейти к оформлению",deliveryDetails:"ДАННЫЕ ДОСТАВКИ",checkoutTitle:"Почти готово",fullName:"Полное имя",address:"Полный адрес доставки",city:"Город / Район",postal:"Почтовый индекс",courier:"Способ доставки",payment:"Способ оплаты",instructions:"Инструкции по доставке",shippingDisclaimer:"Стоимость доставки и оплата будут подтверждены администратором в WhatsApp после проверки наличия.",submitOrder:"Отправить запрос",add:"Добавить",all:"Все",search:"Поиск товаров…",empty:"Корзина пуста."}};
-let cart={},category="All",lang="en";const money=n=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n||0),t=k=>tr[lang][k]||k;
-function renderFilters(){const cats=["All",...new Set(products.map(p=>p.category))];document.querySelector("#category-filters").innerHTML=cats.map(c=>'<button class="filter '+(c===category?'active':'')+'" data-category="'+c+'">'+(c==="All"?t("all"):c)+'</button>').join("")}
-function renderProducts(){let q=document.querySelector("#search").value.toLowerCase();let list=products.filter(p=>(category==="All"||p.category===category)&&[p.name,p.category,p.description].join(" ").toLowerCase().includes(q));document.querySelector("#product-grid").innerHTML=list.map(p=>'<article class="product-card"><div class="product-visual">'+(p.initial||p.name.slice(0,2).toUpperCase())+'</div><div class="product-info"><span class="product-category">'+p.category+'</span><h3>'+p.name+'</h3><p class="product-desc">'+p.description+'</p><div class="product-bottom"><span class="price">'+(p.price?money(p.price):"Contact admin")+'</span><button class="add-button" data-add="'+p.id+'">'+t("add")+' +</button></div></div></article>').join("")}
-function renderCart(){let entries=Object.entries(cart).filter(([,q])=>q>0);document.querySelector("#cart-count").textContent=entries.reduce((s,[,q])=>s+q,0);document.querySelector("#cart-items").innerHTML=entries.map(([id,q])=>{let p=products.find(x=>x.id===id);return '<div class="cart-line"><div><strong>'+p.name+'</strong><small>'+money(p.price)+' · '+p.unit+'</small></div><div class="qty-control"><button data-qty="'+id+'" data-delta="-1">−</button><b>'+q+'</b><button data-qty="'+id+'" data-delta="1">+</button></div></div>'}).join("")||'<p class="catalog-note">'+t("empty")+'</p>';let total=entries.reduce((s,[id,q])=>s+products.find(p=>p.id===id).price*q,0);document.querySelector("#cart-subtotal").textContent=money(total);document.querySelector("#checkout-subtotal").textContent=money(total)}
-function openCart(v){document.querySelector("#cart-panel").classList.toggle("open",v);document.querySelector("#cart-panel").setAttribute("aria-hidden",String(!v))}
-function setLang(v){lang=v;document.documentElement.lang=v;document.querySelectorAll("[data-i18n]").forEach(el=>{let val=t(el.dataset.i18n);el.innerHTML=val.includes("<br>")?val:val});document.querySelector("#search").placeholder=t("search");renderFilters();renderProducts();renderCart()}
-document.addEventListener("click",e=>{let a=e.target.closest("[data-add]");if(a){cart[a.dataset.add]=(cart[a.dataset.add]||0)+1;renderCart()}let q=e.target.closest("[data-qty]");if(q){let id=q.dataset.qty;cart[id]=Math.max(0,(cart[id]||0)+Number(q.dataset.delta));renderCart()}let f=e.target.closest("[data-category]");if(f){category=f.dataset.category;renderFilters();renderProducts()}if(e.target.closest("[data-close-cart]"))openCart(false)});
-document.querySelector("#open-cart").onclick=()=>openCart(true);document.querySelector("#close-cart").onclick=()=>openCart(false);document.querySelector("#search").oninput=renderProducts;document.querySelector("#language").onchange=e=>setLang(e.target.value);document.querySelector("#checkout-button").onclick=()=>{if(!Object.values(cart).some(Boolean)){document.querySelector("#checkout-message").textContent=t("empty");return}openCart(false);document.querySelector("#checkout-dialog").showModal()};document.querySelector("#close-checkout").onclick=()=>document.querySelector("#checkout-dialog").close();document.querySelector("#checkout-form").onsubmit=e=>{e.preventDefault();document.querySelector("#checkout-message").textContent="Demo mode: Supabase is inactive. No order has been sent or saved. Restore Supabase and connect the secure order endpoint before accepting live orders."};setLang("en");
+const SUPABASE_URL = "https://fvxbssqitctrdmxysiqb.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_2O8WRCv_BAhL7BEVtnTgfQ_GfGzIgFR";
+const ORDER_ENDPOINT = SUPABASE_URL + "/functions/v1/submit-store-order";
+
+const tr = {
+  en: { eyebrow:"GOOD FOOD · BETTER EVERYDAY", heroTitle:"Simple choices.<br><em>Feel-good living.</em>", heroText:"Discover quality ingredients and thoughtfully selected food products from Naturalife Bali.", browse:"Explore the catalog ↓", ourSelection:"OUR SELECTION", catalogTitle:"Shop the catalog", yourOrder:"YOUR ORDER", cartTitle:"Shopping cart", subtotal:"Subtotal", shippingNote:"Shipping is calculated and confirmed manually by our team.", checkout:"Continue to checkout", deliveryDetails:"DELIVERY DETAILS", checkoutTitle:"Almost there", fullName:"Full name", address:"Full delivery address", city:"City / District", postal:"Postal code", courier:"Preferred delivery", payment:"Payment preference", instructions:"Delivery instructions (optional)", shippingDisclaimer:"Shipping and payment details will be confirmed by admin via WhatsApp after stock checking.", submitOrder:"Submit order request", add:"Add", all:"All", search:"Search products…", empty:"Your cart is empty.", loading:"Loading products…", noProducts:"No products are currently available. Please check back soon.", unavailable:"Out of stock", success:"Your order request was received. Order number: ", failed:"We could not submit your order. Please try again or contact us on WhatsApp.", stock:"Stock", unit:"Unit" },
+  id: { eyebrow:"MAKAN BAIK · HIDUP LEBIH BAIK", heroTitle:"Pilihan sederhana.<br><em>Hidup lebih sehat.</em>", heroText:"Temukan bahan makanan berkualitas dan produk pilihan dari Naturalife Bali.", browse:"Jelajahi katalog ↓", ourSelection:"PILIHAN KAMI", catalogTitle:"Belanja katalog", yourOrder:"PESANAN ANDA", cartTitle:"Keranjang belanja", subtotal:"Subtotal", shippingNote:"Ongkir dihitung dan dikonfirmasi manual oleh tim kami.", checkout:"Lanjut ke checkout", deliveryDetails:"DETAIL PENGIRIMAN", checkoutTitle:"Hampir selesai", fullName:"Nama lengkap", address:"Alamat pengiriman lengkap", city:"Kota / Kecamatan", postal:"Kode pos", courier:"Pilihan pengiriman", payment:"Preferensi pembayaran", instructions:"Petunjuk pengiriman (opsional)", shippingDisclaimer:"Ongkir dan pembayaran akan dikonfirmasi admin melalui WhatsApp setelah pengecekan stok.", submitOrder:"Kirim permintaan pesanan", add:"Tambah", all:"Semua", search:"Cari produk…", empty:"Keranjang masih kosong.", loading:"Memuat produk…", noProducts:"Belum ada produk yang tersedia. Silakan cek kembali nanti.", unavailable:"Stok habis", success:"Permintaan pesanan berhasil diterima. Nomor pesanan: ", failed:"Pesanan belum dapat dikirim. Silakan coba lagi atau hubungi kami melalui WhatsApp.", stock:"Stok", unit:"Satuan" },
+  ru: { eyebrow:"ХОРОШАЯ ЕДА · КАЖДЫЙ ДЕНЬ", heroTitle:"Простой выбор.<br><em>Хорошее самочувствие.</em>", heroText:"Качественные ингредиенты и продукты Naturalife Bali.", browse:"Открыть каталог ↓", ourSelection:"НАШ ВЫБОР", catalogTitle:"Каталог товаров", yourOrder:"ВАШ ЗАКАЗ", cartTitle:"Корзина", subtotal:"Подытог", shippingNote:"Стоимость доставки рассчитывается и подтверждается администратором.", checkout:"Перейти к оформлению", deliveryDetails:"ДАННЫЕ ДОСТАВКИ", checkoutTitle:"Почти готово", fullName:"Полное имя", address:"Полный адрес доставки", city:"Город / Район", postal:"Почтовый индекс", courier:"Способ доставки", payment:"Способ оплаты", instructions:"Инструкции по доставке", shippingDisclaimer:"Стоимость доставки и оплата будут подтверждены администратором в WhatsApp после проверки наличия.", submitOrder:"Отправить запрос", add:"Добавить", all:"Все", search:"Поиск товаров…", empty:"Корзина пуста.", loading:"Загрузка товаров…", noProducts:"Сейчас нет доступных товаров.", unavailable:"Нет в наличии", success:"Запрос принят. Номер заказа: ", failed:"Не удалось отправить заказ. Попробуйте ещё раз или свяжитесь с нами в WhatsApp.", stock:"Остаток", unit:"Ед." }
+};
+
+let products = [];
+let cart = {};
+let category = "All";
+let lang = "en";
+let submitting = false;
+
+const money = n => new Intl.NumberFormat("id-ID", { style:"currency", currency:"IDR", maximumFractionDigits:0 }).format(Number(n) || 0);
+const t = key => tr[lang][key] || key;
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const courierMap = { "JNE Regular":"jne_regular", "JNE Trucking (JTR)":"jne_trucking", "GoSend":"gosend", "GrabExpress":"grabexpress" };
+
+async function loadProducts() {
+  const grid = document.querySelector("#product-grid");
+  grid.innerHTML = '<p class="catalog-note">' + esc(t("loading")) + '</p>';
+  try {
+    const response = await fetch(SUPABASE_URL + "/rest/v1/store_catalog?select=id,name,category,weight,price,short_description,image_url,featured,stock_quantity,stock_status&active=eq.true&order=featured.desc,name.asc", {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY }
+    });
+    if (!response.ok) throw new Error("Catalog request failed: " + response.status);
+    products = await response.json();
+    products = products.filter(p => p && p.id && p.name);
+    document.querySelector(".catalog-note")?.remove();
+    renderFilters();
+    renderProducts();
+    renderCart();
+  } catch (error) {
+    console.error(error);
+    grid.innerHTML = '<p class="catalog-note">' + esc(t("noProducts")) + '</p>';
+  }
+}
+
+function renderFilters() {
+  const cats = ["All", ...new Set(products.map(p => p.category || "Other"))];
+  if (!cats.includes(category)) category = "All";
+  document.querySelector("#category-filters").innerHTML = cats.map(c =>
+    '<button class="filter ' + (c === category ? "active" : "") + '" data-category="' + esc(c) + '">' +
+    (c === "All" ? esc(t("all")) : esc(c)) + '</button>'
+  ).join("");
+}
+
+function renderProducts() {
+  const q = document.querySelector("#search").value.toLowerCase().trim();
+  const list = products.filter(p => (category === "All" || (p.category || "Other") === category) &&
+    [p.name, p.category, p.short_description, p.weight].join(" ").toLowerCase().includes(q));
+  const grid = document.querySelector("#product-grid");
+  if (!list.length) {
+    grid.innerHTML = '<p class="catalog-note">' + esc(t("noProducts")) + '</p>';
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    const out = Number(p.stock_quantity) <= 0;
+    const visual = p.image_url
+      ? '<img src="' + esc(p.image_url) + '" alt="' + esc(p.name) + '" loading="lazy">'
+      : esc(p.name.slice(0, 2).toUpperCase());
+    return '<article class="product-card"><div class="product-visual">' + visual + '</div><div class="product-info">' +
+      '<span class="product-category">' + esc(p.category || "Other") + '</span><h3>' + esc(p.name) + '</h3>' +
+      '<p class="product-desc">' + esc(p.short_description || "") + (p.weight ? " · " + esc(p.weight) : "") + '</p>' +
+      '<div class="product-bottom"><span class="price">' + money(p.price) + '</span>' +
+      '<button class="add-button" data-add="' + esc(p.id) + '" ' + (out ? "disabled" : "") + '>' +
+      (out ? esc(t("unavailable")) : esc(t("add")) + " +") + '</button></div></div></article>';
+  }).join("");
+}
+
+function cartEntries() {
+  return Object.entries(cart).filter(([, qty]) => qty > 0 && products.some(p => p.id === arguments[0]));
+}
+function cartTotal() {
+  return Object.entries(cart).reduce((sum, [id, qty]) => {
+    const p = products.find(x => x.id === id);
+    return sum + (p ? Number(p.price) * qty : 0);
+  }, 0);
+}
+function renderCart() {
+  const entries = Object.entries(cart).filter(([id, qty]) => qty > 0 && products.some(p => p.id === id));
+  document.querySelector("#cart-count").textContent = entries.reduce((s, [, q]) => s + q, 0);
+  document.querySelector("#cart-items").innerHTML = entries.map(([id, qty]) => {
+    const p = products.find(x => x.id === id);
+    return '<div class="cart-line"><div><strong>' + esc(p.name) + '</strong><small>' + money(p.price) +
+      (p.weight ? " · " + esc(p.weight) : "") + '</small></div><div class="qty-control">' +
+      '<button data-qty="' + esc(id) + '" data-delta="-1" aria-label="Decrease quantity">−</button><b>' + qty +
+      '</b><button data-qty="' + esc(id) + '" data-delta="1" aria-label="Increase quantity" ' +
+      (qty >= Number(p.stock_quantity) ? "disabled" : "") + '>+</button></div></div>';
+  }).join("") || '<p class="catalog-note">' + esc(t("empty")) + '</p>';
+  document.querySelector("#cart-subtotal").textContent = money(cartTotal());
+  document.querySelector("#checkout-subtotal").textContent = money(cartTotal());
+}
+
+function openCart(show) {
+  document.querySelector("#cart-panel").classList.toggle("open", show);
+  document.querySelector("#cart-panel").setAttribute("aria-hidden", String(!show));
+}
+
+function setLang(value) {
+  lang = value;
+  document.documentElement.lang = value;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = t(el.dataset.i18n); });
+  document.querySelector("#search").placeholder = t("search");
+  renderFilters();
+  renderProducts();
+  renderCart();
+}
+
+document.addEventListener("click", event => {
+  const add = event.target.closest("[data-add]");
+  if (add) {
+    const p = products.find(x => x.id === add.dataset.add);
+    if (p && Number(p.stock_quantity) > (cart[p.id] || 0)) {
+      cart[p.id] = (cart[p.id] || 0) + 1;
+      renderCart();
+    }
+  }
+  const qtyButton = event.target.closest("[data-qty]");
+  if (qtyButton) {
+    const id = qtyButton.dataset.qty;
+    const p = products.find(x => x.id === id);
+    cart[id] = Math.max(0, Math.min(Number(p?.stock_quantity || 0), (cart[id] || 0) + Number(qtyButton.dataset.delta)));
+    if (!cart[id]) delete cart[id];
+    renderCart();
+  }
+  const filter = event.target.closest("[data-category]");
+  if (filter) {
+    category = filter.dataset.category;
+    renderFilters();
+    renderProducts();
+  }
+  if (event.target.closest("[data-close-cart]")) openCart(false);
+});
+
+document.querySelector("#open-cart").onclick = () => openCart(true);
+document.querySelector("#close-cart").onclick = () => openCart(false);
+document.querySelector("#search").oninput = renderProducts;
+document.querySelector("#language").onchange = event => setLang(event.target.value);
+
+document.querySelector("#checkout-button").onclick = () => {
+  if (!Object.values(cart).some(Boolean)) return;
+  openCart(false);
+  document.querySelector("#checkout-dialog").showModal();
+};
+document.querySelector("#close-checkout").onclick = () => document.querySelector("#checkout-dialog").close();
+
+document.querySelector("#checkout-form").onsubmit = async event => {
+  event.preventDefault();
+  if (submitting) return;
+  const form = event.currentTarget;
+  const message = document.querySelector("#checkout-message");
+  const submit = form.querySelector('[type="submit"]');
+  const data = new FormData(form);
+  const items = Object.entries(cart).filter(([, qty]) => qty > 0).map(([product_id, qty]) => ({ product_id, qty }));
+  if (!items.length) { message.textContent = t("empty"); return; }
+
+  const payload = {
+    customer_name: String(data.get("customer_name") || "").trim(),
+    phone: String(data.get("phone") || "").trim(),
+    address: String(data.get("address") || "").trim(),
+    city: String(data.get("city") || "").trim(),
+    postal_code: String(data.get("postal_code") || "").trim(),
+    preferred_courier: courierMap[data.get("courier")] || "jne_regular",
+    fulfillment_type: "delivery",
+    delivery_instructions: String(data.get("delivery_notes") || "").trim(),
+    payment_method: data.get("payment_method") === "QRIS" ? "qris" : "bank_transfer",
+    items,
+    website: String(data.get("website") || "")
+  };
+
+  submitting = true;
+  submit.disabled = true;
+  submit.textContent = lang === "id" ? "Mengirim…" : lang === "ru" ? "Отправка…" : "Submitting…";
+  message.textContent = "";
+  try {
+    const response = await fetch(ORDER_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || "Order submission failed");
+    message.textContent = t("success") + result.order_number + ". " + (lang === "id" ? "Admin akan menghubungi Anda melalui WhatsApp untuk konfirmasi ongkir dan pembayaran." : lang === "ru" ? "Администратор свяжется с вами в WhatsApp для подтверждения доставки и оплаты." : "Admin will contact you on WhatsApp to confirm shipping and payment.");
+    cart = {};
+    form.reset();
+    renderCart();
+  } catch (error) {
+    console.error(error);
+    message.textContent = t("failed");
+  } finally {
+    submitting = false;
+    submit.disabled = false;
+    submit.textContent = t("submitOrder");
+  }
+};
+
+setLang("en");
+loadProducts();
