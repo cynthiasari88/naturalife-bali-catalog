@@ -1,7 +1,7 @@
 const SUPABASE_URL="https://fvxbssqitctrdmxysiqb.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_2O8WRCv_BAhL7BEVtnTgfQ_GfGzIgFR";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const ADMIN_EMAIL="cynthiasari88@gmail.com";
+const ADMIN_EMAIL="cynthiamustikas@gmail.com";
 let session=null, productRows=[], orderRows=[], settingsRow=null, editingOrder=null;
 const $=s=>document.querySelector(s);
 const money=n=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Number(n)||0);
