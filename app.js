@@ -102,6 +102,27 @@ function openCart(show) {
 }
 
 
+
+function renderBrandLogo(url){
+ const brand=document.querySelector(".site-header .brand");
+ if(!brand)return;
+ let img=brand.querySelector(".brand-logo-image");
+ if(url){if(!img){img=document.createElement("img");img.className="brand-logo-image";img.alt="Naturalife Bali";brand.prepend(img);}img.src=url;brand.querySelector(".brand-mark")?.setAttribute("hidden","");}
+ else{img?.remove();brand.querySelector(".brand-mark")?.removeAttribute("hidden");}
+}
+function renderWhatsAppCare(settings){
+ document.querySelector("#whatsapp-care")?.remove();
+ if(!settings||settings.whatsapp_widget_enabled===false||!settings.whatsapp_number)return;
+ const number=String(settings.whatsapp_number).replace(/[^0-9]/g,"");
+ if(!number)return;
+ const greeting=lang==="id"?(settings.whatsapp_greeting_id||"Halo! Ada yang bisa kami bantu?"):lang==="ru"?(settings.whatsapp_greeting_ru||"Здравствуйте! Чем мы можем вам помочь?"):(settings.whatsapp_greeting_en||"Hello! How can we help you?");
+ const message=settings.whatsapp_prefill_message||"Hello Naturalife Bali, I have a question about your products.";
+ const root=document.createElement("div");root.id="whatsapp-care";root.className="whatsapp-care";
+ root.innerHTML='<div class="whatsapp-popover" id="whatsapp-popover"><button class="whatsapp-close" type="button" aria-label="Close">×</button><strong>Naturalife Customer Care</strong><p>'+esc(greeting)+'</p><a target="_blank" rel="noopener" href="https://wa.me/'+number+'?text='+encodeURIComponent(message)+'">'+(lang==="id"?"Mulai chat":lang==="ru"?"Начать чат":"Start chat")+' ↗</a></div><button class="whatsapp-fab" type="button" aria-label="Contact Naturalife on WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.2A12.5 12.5 0 0 0 5.3 22.2L3.7 28l6-1.6A12.5 12.5 0 1 0 16 3.2Zm0 22.5c-2 0-4-.5-5.7-1.6l-.4-.2-3.4.9.9-3.3-.2-.4A10 10 0 1 1 16 25.7Zm5.5-7.5c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.2 8.2 0 0 1-2.4-1.5 9 9 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6s0-.4 0-.6-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.8 1.2 3.2 1.4 3.4a12 12 0 0 0 4.6 4c.6.3 1.1.5 1.5.6.6.2 1.2.2 1.7.1.5-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4s-.3-.2-.6-.4Z"/></svg></button>';
+ document.body.append(root);
+ const pop=root.querySelector(".whatsapp-popover");root.querySelector(".whatsapp-fab").onclick=()=>pop.classList.toggle("open");root.querySelector(".whatsapp-close").onclick=()=>pop.classList.remove("open");
+}
+
 async function loadStorefrontSettings() {
   try {
     const response = await fetch(SUPABASE_URL + "/rest/v1/store_settings?select=*&id=eq.true&limit=1", {
@@ -110,6 +131,8 @@ async function loadStorefrontSettings() {
     if (!response.ok) return;
     const rows = await response.json();
     storeSettings = rows[0] || null;
+    renderBrandLogo(storeSettings?.brand_logo_url);
+    renderWhatsAppCare(storeSettings);
     if (!storeSettings) return;
     const setting = storeSettings;
     const localized = key => lang === "id" ? (setting[key + "_id"] || setting[key]) : lang === "ru" ? (setting[key + "_ru"] || setting[key]) : setting[key];
