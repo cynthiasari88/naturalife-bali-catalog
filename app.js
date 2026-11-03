@@ -13,6 +13,7 @@ let cart = {};
 let category = "All";
 let lang = "en";
 let submitting = false;
+let storeSettings = null;
 
 const money = n => new Intl.NumberFormat("id-ID", { style:"currency", currency:"IDR", maximumFractionDigits:0 }).format(Number(n) || 0);
 const t = key => tr[lang][key] || key;
@@ -100,6 +101,50 @@ function openCart(show) {
   document.querySelector("#cart-panel").setAttribute("aria-hidden", String(!show));
 }
 
+
+async function loadStorefrontSettings() {
+  try {
+    const response = await fetch(SUPABASE_URL + "/rest/v1/store_settings?select=*&id=eq.true&limit=1", {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY }
+    });
+    if (!response.ok) return;
+    const rows = await response.json();
+    storeSettings = rows[0] || null;
+    if (!storeSettings) return;
+    const setting = storeSettings;
+    const localized = key => lang === "id" ? (setting[key + "_id"] || setting[key]) : lang === "ru" ? (setting[key + "_ru"] || setting[key]) : setting[key];
+    const hero = document.querySelector(".hero");
+    if (hero) hero.hidden = setting.show_hero === false;
+    const title = document.querySelector("[data-i18n='heroTitle']");
+    if (title && localized("hero_title")) title.textContent = localized("hero_title");
+    const eyebrow = document.querySelector("[data-i18n='eyebrow']");
+    if (eyebrow && localized("hero_eyebrow")) eyebrow.textContent = localized("hero_eyebrow");
+    const description = document.querySelector("[data-i18n='heroText']");
+    if (description && localized("hero_description")) description.textContent = localized("hero_description");
+    const footer = document.querySelector(".site-footer span");
+    if (footer && setting.footer_text) footer.textContent = setting.footer_text;
+    if (setting.site_name) {
+      document.title = setting.site_name + " | Retail Catalog";
+      document.querySelector(".brand strong").textContent = setting.site_name.toUpperCase();
+      document.querySelector(".site-footer strong").textContent = setting.site_name.toUpperCase();
+    }
+    if (setting.primary_color) document.documentElement.style.setProperty("--green", setting.primary_color);
+    if (setting.background_color) document.documentElement.style.setProperty("--ivory", setting.background_color);
+    if (setting.catalog_columns) document.documentElement.style.setProperty("--catalog-columns", setting.catalog_columns);
+    let bar = document.querySelector(".announcement-bar");
+    const announcement = localized("announcement_text");
+    if (announcement) {
+      if (!bar) {
+        bar = document.createElement("div");
+        bar.className = "announcement-bar";
+        document.querySelector(".site-header").before(bar);
+      }
+      bar.textContent = announcement;
+      bar.hidden = false;
+    } else if (bar) bar.hidden = true;
+  } catch (error) { console.warn("Store settings could not be loaded", error); }
+}
+
 function setLang(value) {
   lang = value;
   document.documentElement.lang = value;
@@ -108,6 +153,7 @@ function setLang(value) {
   renderFilters();
   renderProducts();
   renderCart();
+  loadStorefrontSettings();
 }
 
 document.addEventListener("click", event => {
@@ -199,4 +245,5 @@ document.querySelector("#checkout-form").onsubmit = async event => {
 };
 
 setLang("en");
+loadStorefrontSettings();
 loadProducts();
