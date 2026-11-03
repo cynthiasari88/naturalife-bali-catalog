@@ -145,6 +145,41 @@ async function loadStorefrontSettings() {
   } catch (error) { console.warn("Store settings could not be loaded", error); }
 }
 
+
+const cmsCopy={
+ en:{blogLabel:"KNOW YOUR INGREDIENTS",blogTitle:"Learn with Naturalife",blogIntro:"Practical guides, ingredient stories and ideas for everyday cooking.",faqLabel:"NEED TO KNOW",faqTitle:"Frequently asked questions",faqIntro:"Helpful answers about our products and ordering.",read:"Read article",noArticles:"New educational articles are coming soon.",noFaq:"Questions and answers will appear here soon."},
+ id:{blogLabel:"KENALI BAHAN PANGAN",blogTitle:"Belajar bersama Naturalife",blogIntro:"Panduan praktis, cerita bahan pangan, dan inspirasi untuk memasak sehari-hari.",faqLabel:"INFORMASI PENTING",faqTitle:"Pertanyaan yang sering diajukan",faqIntro:"Jawaban seputar produk dan cara pemesanan.",read:"Baca artikel",noArticles:"Artikel edukasi akan segera hadir.",noFaq:"Informasi FAQ akan segera tersedia."},
+ ru:{blogLabel:"УЗНАЙТЕ ИНГРЕДИЕНТЫ",blogTitle:"Полезное от Naturalife",blogIntro:"Практические советы, истории ингредиентов и идеи для повседневной кухни.",faqLabel:"ВАЖНАЯ ИНФОРМАЦИЯ",faqTitle:"Часто задаваемые вопросы",faqIntro:"Ответы о продуктах и оформлении заказов.",read:"Читать статью",noArticles:"Скоро появятся новые статьи.",noFaq:"Ответы на вопросы скоро появятся."}
+};
+let slideRows=[],articleRows=[],faqRows=[],activeSlide=0;
+const localField=(row,key)=>row[key+"_"+lang]||row[key+"_en"]||"";
+async function loadEditorialContent(){
+ const headers={apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY};
+ try{
+  const [s,a,f]=await Promise.all([
+   fetch(SUPABASE_URL+"/rest/v1/store_slides?select=*&active=eq.true&order=sort_order.asc",{headers}),
+   fetch(SUPABASE_URL+"/rest/v1/store_articles?select=*&status=eq.published&order=published_at.desc",{headers}),
+   fetch(SUPABASE_URL+"/rest/v1/store_faqs?select=*&active=eq.true&order=sort_order.asc",{headers})
+  ]);
+  if(s.ok)slideRows=await s.json();if(a.ok)articleRows=await a.json();if(f.ok)faqRows=await f.json();
+  renderSlides();renderEditorial();
+ }catch(e){console.warn("Editorial content unavailable",e);}
+}
+function renderSlides(){
+ const section=document.querySelector("#slideshow"),track=document.querySelector("#slide-track"),dots=document.querySelector("#slide-dots");
+ if(!slideRows.length){section.hidden=true;return;}section.hidden=false;activeSlide=Math.min(activeSlide,slideRows.length-1);
+ track.innerHTML=slideRows.map((s,i)=>'<article class="slide '+(i===activeSlide?"active":"")+'">'+(s.image_url?'<img class="slide-image" src="'+esc(s.image_url)+'" alt="'+esc(s.image_alt||localField(s,"title"))+'">':'')+'<div class="slide-shade"></div><div class="slide-copy"><p class="eyebrow">'+esc(localField(s,"eyebrow"))+'</p><h2>'+esc(localField(s,"title"))+'</h2><p>'+esc(localField(s,"description"))+'</p>'+(localField(s,"button_label")?'<a class="slide-cta" href="'+esc(s.button_url||"#catalog")+'">'+esc(localField(s,"button_label"))+'</a>':'')+'</div></article>').join("");
+ dots.innerHTML=slideRows.map((s,i)=>'<button class="slide-dot '+(i===activeSlide?"active":"")+'" data-slide-index="'+i+'" aria-label="Slide '+(i+1)+'"></button>').join("");
+}
+function moveSlide(delta){if(!slideRows.length)return;activeSlide=(activeSlide+delta+slideRows.length)%slideRows.length;renderSlides();}
+document.querySelector("#slide-prev").onclick=()=>moveSlide(-1);document.querySelector("#slide-next").onclick=()=>moveSlide(1);
+document.querySelector("#slide-dots").addEventListener("click",e=>{const b=e.target.closest("[data-slide-index]");if(b){activeSlide=Number(b.dataset.slideIndex);renderSlides();}});
+function renderEditorial(){
+ const c=cmsCopy[lang];document.querySelector("[data-label-blog]").textContent=c.blogLabel;document.querySelector("[data-title-blog]").textContent=c.blogTitle;document.querySelector("[data-intro-blog]").textContent=c.blogIntro;document.querySelector("[data-label-faq]").textContent=c.faqLabel;document.querySelector("[data-title-faq]").textContent=c.faqTitle;document.querySelector("[data-intro-faq]").textContent=c.faqIntro;
+ document.querySelector("#article-grid").innerHTML=articleRows.length?articleRows.map(a=>'<article class="article-card">'+(a.cover_image_url?'<img src="'+esc(a.cover_image_url)+'" alt="'+esc(localField(a,"title"))+'" loading="lazy">':'')+'<div class="article-card-copy"><span class="product-category">'+esc(a.category)+' · '+Number(a.read_minutes||3)+' min</span><h3>'+esc(localField(a,"title"))+'</h3><p>'+esc(localField(a,"excerpt"))+'</p><details><summary>'+c.read+'</summary><div class="article-body">'+esc(localField(a,"content")).replace(/\n/g,"<br>")+'</div></details></div></article>').join(""):'<p class="catalog-note">'+c.noArticles+'</p>';
+ document.querySelector("#faq-list").innerHTML=faqRows.length?faqRows.map(f=>'<details class="faq-item"><summary>'+esc(localField(f,"question"))+'</summary><div>'+esc(localField(f,"answer")).replace(/\n/g,"<br>")+'</div></details>').join(""):'<p class="catalog-note">'+c.noFaq+'</p>';
+}
+
 function setLang(value) {
   lang = value;
   document.documentElement.lang = value;
@@ -154,6 +189,8 @@ function setLang(value) {
   renderProducts();
   renderCart();
   loadStorefrontSettings();
+  renderEditorial();
+  renderSlides();
 }
 
 document.addEventListener("click", event => {
@@ -247,3 +284,4 @@ document.querySelector("#checkout-form").onsubmit = async event => {
 setLang("en");
 loadStorefrontSettings();
 loadProducts();
+loadEditorialContent();
