@@ -104,7 +104,8 @@ function openCart(show) {
 
 
 function renderBrandLogo(url){
- const brand=document.querySelector(".site-header .brand");
+ function renderBrandLogo(url){
+ url = url || "/logo.png";
  if(!brand)return;
  let img=brand.querySelector(".brand-logo-image");
  if(url){if(!img){img=document.createElement("img");img.className="brand-logo-image";img.alt="Naturalife Bali";brand.prepend(img);}img.src=url;brand.querySelector(".brand-mark")?.setAttribute("hidden","");}
