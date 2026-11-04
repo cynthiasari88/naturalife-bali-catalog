@@ -118,3 +118,9 @@ h1 em{color:#829478;font-weight:600}
 @media(max-width:540px){.brand-logo-image{max-width:112px;max-height:38px}.whatsapp-care{right:16px;bottom:17px}.whatsapp-fab{width:54px;height:54px}.whatsapp-fab svg{width:30px;height:30px}}
 
 .logo-preview-wrap{display:flex;align-items:center;gap:14px;min-height:72px;padding:12px 15px;border:1px dashed #d8dfd4;border-radius:10px;background:#fafbf7}.logo-preview-wrap img{max-width:220px;max-height:90px;object-fit:contain}.logo-preview-wrap small{font-size:11px;color:#78837b}.logo-preview-wrap img[hidden]{display:none}
+.brand .brand-mark,
+.brand > span,
+.brand strong,
+.brand small{display:none!important}
+.brand .brand-logo-image{display:block!important;height:auto;max-width:190px;max-height:58px}
+@media(max-width:540px){.brand .brand-logo-image{max-width:125px;max-height:40px}}
