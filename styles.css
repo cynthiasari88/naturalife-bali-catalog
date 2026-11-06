@@ -124,3 +124,4 @@ h1 em{color:#829478;font-weight:600}
 .brand small{display:none!important}
 .brand .brand-logo-image{display:block!important;height:auto;max-width:190px;max-height:58px}
 @media(max-width:540px){.brand .brand-logo-image{max-width:125px;max-height:40px}}
+.cart-panel.open ~ .whatsapp-care{display:none}
