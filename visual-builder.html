@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#244b3c">
+<title>Naturalife Bali · Visual Website Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="visual-builder.css">
+</head>
+<body>
+<div id="login-screen" class="login-wrap"><form id="login-form" class="login-card">
+<div class="brand-mark">N</div><p class="eyebrow">NATURALIFE BALI · PRIVATE AREA</p>
+<h1>Visual Website Builder</h1><p class="muted">Sign in with your authorized store administrator account.</p>
+<label>Email<input name="email" type="email" autocomplete="username" required value="cynthiamustikas@gmail.com"></label>
+<label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+<button class="primary-btn" type="submit">Sign in</button><p id="login-message" class="message" role="status"></p>
+<a class="back-link" href="admin.html">← Back to admin panel</a>
+</form></div>
+<div id="builder-app" class="builder-app hidden">
+<header class="topbar">
+  <div class="brand-lockup"><a href="admin.html" title="Back to admin">←</a><span class="brand-mark small">N</span><div><b>NATURALIFE</b><small>VISUAL WEBSITE BUILDER</small></div></div>
+  <div class="top-actions"><span id="save-state" class="save-state">All changes saved</span><button id="undo-btn" class="tool-btn" title="Undo">↶</button><button id="redo-btn" class="tool-btn" title="Redo">↷</button><button id="desktop-btn" class="tool-btn active" title="Desktop preview">▣</button><button id="mobile-btn" class="tool-btn" title="Mobile preview">▯</button><button id="save-draft" class="secondary-btn">Save draft</button><button id="publish-page" class="primary-btn">Publish</button></div>
+</header>
+<div class="workspace">
+  <aside class="left-panel">
+    <div class="panel-heading"><span>ELEMENTS</span><small>Click to add</small></div>
+    <div class="element-group"><h3>Layout</h3><button class="element" data-add="section"><span>▤</span><span><b>Section</b><small>Full-width content area</small></span><i>＋</i></button><button class="element" data-add="columns"><span>▥</span><span><b>Columns</b><small>Two-column layout</small></span><i>＋</i></button><button class="element" data-add="spacer"><span>↕</span><span><b>Spacer</b><small>Adjustable vertical space</small></span><i>＋</i></button></div>
+    <div class="element-group"><h3>Basic</h3><button class="element" data-add="heading"><span>T</span><span><b>Heading</b><small>Section title</small></span><i>＋</i></button><button class="element" data-add="text"><span>¶</span><span><b>Text</b><small>Paragraph content</small></span><i>＋</i></button><button class="element" data-add="image"><span>▧</span><span><b>Image</b><small>Image from URL</small></span><i>＋</i></button><button class="element" data-add="button"><span>▱</span><span><b>Button</b><small>Call to action</small></span><i>＋</i></button></div>
+    <div class="element-group"><h3>Store</h3><button class="element" data-add="hero"><span>✧</span><span><b>Hero banner</b><small>Image and headline</small></span><i>＋</i></button><button class="element" data-add="features"><span>✳</span><span><b>Feature cards</b><small>Three benefit cards</small></span><i>＋</i></button><button class="element" data-add="shop-link"><span>⌑</span><span><b>Shop section link</b><small>Link to existing catalog</small></span><i>＋</i></button></div>
+    <div class="panel-foot">Drag elements in the canvas to reorder them.</div>
+  </aside>
+  <main class="canvas-area">
+    <div class="canvas-toolbar"><div><b>Homepage</b><span id="canvas-device-label">Desktop · 1440 px</span></div><button id="preview-page" class="text-btn">Preview ↗</button></div>
+    <div class="canvas-scroll"><div id="page-canvas" class="page-canvas desktop"><div class="canvas-site-header"><span class="canvas-logo">N</span><b>NATURALIFE BALI</b><span>CATALOG　 LEARN　 FAQ</span></div><div id="blocks-list" class="blocks-list"></div><div class="canvas-catalog"><small>YOUR EXISTING STORE</small><h2>Shop the catalog</h2><p>Your live product catalog, cart and checkout remain connected.</p><span class="catalog-placeholder">Product catalog preview</span></div><div class="canvas-footer">NATURALIFE BALI · NATURAL FOOD STORE</div></div></div>
+  </main>
+  <aside class="right-panel"><div class="panel-heading"><span>CONTENT & STYLE</span><small id="selection-label">No selection</small></div><div id="empty-inspector" class="empty-inspector"><div>✧</div><b>Select an element</b><p>Choose an element on the canvas to edit its content and design.</p></div><div id="inspector" class="inspector hidden"></div></aside>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="visual-builder.js"></script>
+</body></html>
