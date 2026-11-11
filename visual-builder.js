@@ -4,7 +4,7 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const $=s=>document.querySelector(s);
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=> "b_"+Math.random().toString(36).slice(2,10);
-const safeUrl=v=>/^(https?:\\/\\/|\\/|#)/i.test(String(v||""))?String(v):"#";
+const safeUrl=v=>{const u=String(v||"");return u.startsWith("https://")||u.startsWith("http://")||u.startsWith("/")||u.startsWith("#")?u:"#";};
 const defaults={
  hero:{eyebrow:"GOOD FOOD · BETTER EVERYDAY",title:"Simple choices. Feel-good living.",text:"Discover quality ingredients and thoughtfully selected food products from Naturalife Bali.",image:"",background:"#edf1e8",color:"#244b3c",padding:76,align:"left"},
  section:{title:"A section heading",text:"Add a short introduction for this section.",background:"#f8f8f3",color:"#244b3c",padding:44,align:"left"},
