@@ -37,4 +37,6 @@ Open `index.html` in a browser. A live connection to the Supabase project is req
 - Drafts are stored in `public.store_homepage_pages` with slug `homepage-draft`.
 - Publishing writes the live page to slug `homepage`; the storefront reads only published pages.
 - The editor supports hero banners, sections, two-column content, headings, text, images, buttons, feature cards and spacing blocks.
+- Sections and columns can contain nested elements; select a section before adding content, or select a columns block and choose the target column in the inspector.
+- Nested elements can be reordered within the same container, duplicated, removed, and edited independently.
 - Existing product catalog, cart, checkout, and order flows remain in place beneath the visual homepage content.
