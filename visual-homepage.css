@@ -2,3 +2,5 @@
 
 .vh-nested{margin-top:18px}.vh-nested .vh-heading,.vh-nested .vh-text{padding-left:0;padding-right:0}.vh-columns>article{min-width:0}.vh-columns>article .vh-image{display:block}.vh-columns>article .vh-button{margin-top:6px}
 @media(max-width:650px){.vh-columns,.vh-features{grid-template-columns:1fr}}
+
+.vh-block{position:relative;overflow:hidden}.vh-block.has-bg-image>.vh-hero,.vh-block.has-bg-image>.vh-section,.vh-block.has-bg-image>.vh-columns,.vh-block.has-bg-image>.vh-features{background-color:transparent!important}.vh-block.has-bg-image{background-repeat:no-repeat;background-size:cover;background-position:center}
