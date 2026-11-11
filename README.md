@@ -42,3 +42,4 @@ Open `index.html` in a browser. A live connection to the Supabase project is req
 - Advanced block controls include outer spacing, maximum width, border, corner radius, and background image URL.
 - Desktop, tablet (768 px), and mobile (390 px) canvas viewport previews are available.
 - Existing product catalog, cart, checkout, and order flows remain in place beneath the visual homepage content.
+\n### Media Library\n- Image and background-image fields can open the built-in Media Library to select existing store media or upload new files.\n- Uploads use the existing public `naturalife-store-media` Supabase Storage bucket; no new bucket or storage policy is required.\n- Only store admins can upload or modify media under the existing Storage RLS policies. Public visitors can view published image URLs.\n- Accepted formats: JPG, PNG and WebP; maximum upload size: 5 MB.\n
