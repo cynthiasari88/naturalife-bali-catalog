@@ -29,3 +29,24 @@ The repository must be connected to Vercel (or another static host) before the u
 
 ## Local preview
 Open `index.html` in a browser. A live connection to the Supabase project is required for catalog and checkout functionality.
+
+ 
+## Visual Website Builder
+- Open `/visual-builder.html` from the admin panel's Visual Website Builder link.
+- The editor uses the existing Supabase Auth session and the `is_store_admin()` authorization check.
+- Drafts are stored in `public.store_homepage_pages` with slug `homepage-draft`.
+- Publishing writes the live page to slug `homepage`; the storefront reads only published pages.
+- The editor supports hero banners, sections, two-column content, headings, text, images, buttons, feature cards and spacing blocks.
+- Sections and columns can contain nested elements; select a section before adding content, or select a columns block and choose the target column in the inspector.
+- Nested elements can be reordered within the same container, duplicated, removed, and edited independently.
+- Advanced block controls include outer spacing, maximum width, border, corner radius, and background image URL.
+- Desktop, tablet (768 px), and mobile (390 px) canvas viewport previews are available.
+- Existing product catalog, cart, checkout, and order flows remain in place beneath the visual homepage content.
+
+### Media Library
+- Image and background-image fields can open the built-in Media Library to select existing store media or upload new files.
+- Uploads use the existing public `naturalife-store-media` Supabase Storage bucket; no new bucket or storage policy is required.
+- Only store admins can upload or modify media under the existing Storage RLS policies. Public visitors can view published image URLs.
+- Accepted formats: JPG, PNG and WebP; maximum upload size: 5 MB.
+
+- Image blocks support adjustable display height, cover/contain fit, and focal position. Background images support fit and focal-position controls.
