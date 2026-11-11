@@ -4,6 +4,7 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const $=s=>document.querySelector(s);
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=> "b_"+Math.random().toString(36).slice(2,10);
+const safeUrl=v=>/^(https?:\\/\\/|\\/|#)/i.test(String(v||""))?String(v):"#";
 const defaults={
  hero:{eyebrow:"GOOD FOOD · BETTER EVERYDAY",title:"Simple choices. Feel-good living.",text:"Discover quality ingredients and thoughtfully selected food products from Naturalife Bali.",image:"",background:"#edf1e8",color:"#244b3c",padding:76,align:"left"},
  section:{title:"A section heading",text:"Add a short introduction for this section.",background:"#f8f8f3",color:"#244b3c",padding:44,align:"left"},
@@ -22,21 +23,22 @@ function snapshot(){undoStack.push(JSON.stringify(schema));if(undoStack.length>6
 function updateState(){renderBlocks();renderInspector();}
 function block(type){return {id:uid(),type,props:structuredClone(defaults[type]||{})};}
 function addBlock(type){snapshot();const b=block(type);schema.blocks.push(b);selectedId=b.id;updateState();}
+function duplicateBlock(id){const i=schema.blocks.findIndex(b=>b.id===id);if(i<0)return;snapshot();const copy=structuredClone(schema.blocks[i]);copy.id=uid();schema.blocks.splice(i+1,0,copy);selectedId=copy.id;updateState();}
 function getSelected(){return schema.blocks.find(b=>b.id===selectedId)||null;}
 function setSaveState(v){const el=$("#save-state");if(el)el.textContent=v;}
 function renderBlock(b){
  const p=b.props||{},id=safe(b.id),style=(bg,color,pad)=>`style="background:${safe(bg||"transparent")};color:${safe(color||"#26352e")};padding:${Number(pad)||0}px"`;
  let body="";
- if(b.type==="hero")body=`<div class="block-hero" ${style(p.background,p.color,p.padding)}><div class="hero-copy"><span class="block-eyebrow">${safe(p.eyebrow)}</span><h1>${safe(p.title)}</h1><p>${safe(p.text)}</p></div>${p.image?`<img src="${safe(p.image)}" alt="">`:""}</div>`;
+ if(b.type==="hero")body=`<div class="block-hero" ${style(p.background,p.color,p.padding)}><div class="hero-copy"><span class="block-eyebrow">${safe(p.eyebrow)}</span><h1>${safe(p.title)}</h1><p>${safe(p.text)}</p></div>${p.image?`<img src="${safe(safeUrl(p.image))}" alt="">`:""}</div>`;
  else if(b.type==="section")body=`<div class="block-section" ${style(p.background,p.color,p.padding)}><h2>${safe(p.title)}</h2><p>${safe(p.text)}</p></div>`;
  else if(b.type==="columns")body=`<div class="block-columns" ${style(p.background,p.color,p.padding)}><div><h3>${safe(p.leftTitle)}</h3><p>${safe(p.leftText)}</p></div><div><h3>${safe(p.rightTitle)}</h3><p>${safe(p.rightText)}</p></div></div>`;
  else if(b.type==="heading")body=`<div class="block-heading" style="color:${safe(p.color)};font-size:${Number(p.fontSize)||34}px;text-align:${safe(p.align)};padding:${Number(p.padding)||0}px 8%"><span>${safe(p.text)}</span></div>`;
  else if(b.type==="text")body=`<div class="block-text" style="color:${safe(p.color)};font-size:${Number(p.fontSize)||14}px;text-align:${safe(p.align)};padding:${Number(p.padding)||0}px 8%"><span>${safe(p.text).replace(/\n/g,"<br>")}</span></div>`;
  else if(b.type==="image")body=p.image?`<div style="padding:${Number(p.padding)||0}px;text-align:${safe(p.align)}"><img class="block-image" style="width:${Math.min(100,Math.max(10,Number(p.width)||80))}%;border-radius:${Number(p.radius)||0}px" src="${safe(p.image)}" alt="${safe(p.alt)}"></div>`:`<div class="block-text">Add an image URL in the style panel.</div>`;
- else if(b.type==="button"||b.type==="shop-link")body=`<div class="block-button-wrap" style="text-align:${safe(p.align||"left")};padding:${Number(p.padding)||20}px 8%"><a class="block-button" style="background:${safe(p.background)};color:${safe(p.color)}" href="${safe(p.url||"#catalog")}">${safe(p.text||"Explore")}</a></div>`;
+ else if(b.type==="button"||b.type==="shop-link")body=`<div class="block-button-wrap" style="text-align:${safe(p.align||"left")};padding:${Number(p.padding)||20}px 8%"><a class="block-button" style="background:${safe(p.background)};color:${safe(p.color)}" href="${safe(safeUrl(p.url||"#catalog"))}">${safe(p.text||"Explore")}</a></div>`;
  else if(b.type==="features")body=`<div class="block-features" style="background:${safe(p.background)};padding:${Number(p.padding)||30}px 8%"><div class="feature-card"><b>${safe(p.card1Title)}</b><p>${safe(p.card1Text)}</p></div><div class="feature-card"><b>${safe(p.card2Title)}</b><p>${safe(p.card2Text)}</p></div><div class="feature-card"><b>${safe(p.card3Title)}</b><p>${safe(p.card3Text)}</p></div></div>`;
  else if(b.type==="spacer")body=`<div class="block-spacer" style="height:${Math.min(400,Math.max(8,Number(p.height)||60))}px"></div>`;
- return `<article class="canvas-block ${selectedId===b.id?"selected":""}" data-block-id="${id}" draggable="true"><div class="block-tools"><button data-move-up="${id}" title="Move up">↑</button><button data-move-down="${id}" title="Move down">↓</button><button data-remove="${id}" title="Delete">×</button></div>${body}</article>`;
+ return `<article class="canvas-block ${selectedId===b.id?"selected":""}" data-block-id="${id}" draggable="true"><div class="block-tools"><button data-move-up="${id}" title="Move up">↑</button><button data-move-down="${id}" title="Move down">↓</button><button data-duplicate="${id}" title="Duplicate">＋</button><button data-remove="${id}" title="Delete">×</button></div>${body}</article>`;
 }
 function renderBlocks(){const el=$("#blocks-list");if(!schema.blocks.length){el.innerHTML='<div class="empty-inspector" style="padding:70px 20px"><div>＋</div><b>Your homepage starts here</b><p>Add an element from the left panel, or start with a hero banner.</p></div>';return;}el.innerHTML=schema.blocks.map(renderBlock).join("");}
 function inputField(key,label,value,type="text",wide=false){const v=value??"";if(type==="textarea")return `<label>${label}<textarea data-prop="${key}">${safe(v)}</textarea></label>`;if(type==="color")return `<label>${label}<input data-prop="${key}" type="color" value="${safe(v||"#244b3c")}"></label>`;return `<label>${label}<input data-prop="${key}" type="${type}" value="${safe(v)}"></label>`;}
@@ -96,6 +98,7 @@ document.addEventListener("click",e=>{
  const blockEl=e.target.closest("[data-block-id]");if(blockEl&&!e.target.closest(".block-tools")){selectedId=blockEl.dataset.blockId;renderBlocks();renderInspector();}
  const up=e.target.closest("[data-move-up]");if(up)moveBlock(up.dataset.moveUp,-1);
  const down=e.target.closest("[data-move-down]");if(down)moveBlock(down.dataset.moveDown,1);
+ const duplicate=e.target.closest("[data-duplicate]");if(duplicate)duplicateBlock(duplicate.dataset.duplicate);
  const del=e.target.closest("[data-remove]");if(del)removeBlock(del.dataset.remove);
  if(e.target.id==="delete-selected"&&selectedId)removeBlock(selectedId);
 });
@@ -107,7 +110,8 @@ $("#inspector").addEventListener("change",e=>{const el=e.target;if(el.dataset.pr
 $("#blocks-list").addEventListener("dragstart",e=>{const el=e.target.closest("[data-block-id]");if(!el)return;dragId=el.dataset.blockId;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",dragId);});
 $("#blocks-list").addEventListener("dragover",e=>{if(e.target.closest("[data-block-id]"))e.preventDefault();});
 $("#blocks-list").addEventListener("drop",e=>{e.preventDefault();const target=e.target.closest("[data-block-id]");if(!target||!dragId||dragId===target.dataset.blockId)return;const from=schema.blocks.findIndex(b=>b.id===dragId),to=schema.blocks.findIndex(b=>b.id===target.dataset.blockId);if(from<0||to<0)return;snapshot();const [moved]=schema.blocks.splice(from,1);schema.blocks.splice(to,0,moved);selectedId=dragId;dragId=null;updateState();});
-$("#undo-btn").onclick=undo;$("#redo-btn").onclick=redo;$("#desktop-btn").onclick=()=>setDevice("desktop");$("#mobile-btn").onclick=()=>setDevice("mobile");
+$("#undo-btn").onclick=undo;$("#redo-btn").onclick=redo;
+document.addEventListener("keydown",e=>{const mod=e.metaKey||e.ctrlKey;if(!mod||e.altKey)return;const tag=document.activeElement?.tagName;if(["INPUT","TEXTAREA","SELECT"].includes(tag))return;if(e.key.toLowerCase()==="z"){e.preventDefault();e.shiftKey?redo():undo();}else if(e.key.toLowerCase()==="y"){e.preventDefault();redo();}});$("#desktop-btn").onclick=()=>setDevice("desktop");$("#mobile-btn").onclick=()=>setDevice("mobile");
 $("#preview-page").textContent="Open live site ↗";$("#preview-page").onclick=()=>window.open("index.html","_blank","noopener");
 async function saveRecord(slug,status){const row={slug,title:"Naturalife Bali Homepage",status,page_schema:schema,updated_at:new Date().toISOString(),published_at:status==="published"?new Date().toISOString():null};const {error}=await db.from("store_homepage_pages").upsert(row,{onConflict:"slug"});if(error)throw error;}
 $("#save-draft").onclick=async()=>{const btn=$("#save-draft");btn.disabled=true;setSaveState("Saving draft…");try{await saveRecord("homepage-draft","draft");setSaveState("Draft saved");}catch(e){setSaveState("Save failed");alert(e.message);}finally{btn.disabled=false;}};
