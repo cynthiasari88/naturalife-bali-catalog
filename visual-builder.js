@@ -18,20 +18,21 @@ const defaults={
  "shop-link":{text:"Explore our products",url:"#catalog",background:"#244b3c",color:"#ffffff",padding:26}
 };
 const labels={hero:"Hero banner",section:"Section",columns:"Two columns",heading:"Heading",text:"Text",image:"Image",button:"Button",features:"Feature cards",spacer:"Spacer","shop-link":"Shop catalog link"};
-let schema={version:1,blocks:[]},selectedId=null,undoStack=[],redoStack=[],session=null,dragId=null;
+let schema={version:1,blocks:[]},selectedId=null,selectedColumn=0,undoStack=[],redoStack=[],session=null,dragId=null;
 function snapshot(){undoStack.push(JSON.stringify(schema));if(undoStack.length>60)undoStack.shift();redoStack=[];setSaveState("Unsaved changes");}
 function updateState(){renderBlocks();renderInspector();}
-function block(type){return {id:uid(),type,props:structuredClone(defaults[type]||{})};}
-function addBlock(type){snapshot();const b=block(type);schema.blocks.push(b);selectedId=b.id;updateState();}
-function duplicateBlock(id){const i=schema.blocks.findIndex(b=>b.id===id);if(i<0)return;snapshot();const copy=structuredClone(schema.blocks[i]);copy.id=uid();schema.blocks.splice(i+1,0,copy);selectedId=copy.id;updateState();}
-function getSelected(){return schema.blocks.find(b=>b.id===selectedId)||null;}
+function block(type){const b={id:uid(),type,props:structuredClone(defaults[type]||{})};if(type==="section")b.children=[];if(type==="columns")b.columns=[[],[]];return b;}
+function locate(id,list=schema.blocks,parent=null){for(let i=0;i<list.length;i++){const b=list[i];if(b.id===id)return {block:b,list,index:i,parent};if(Array.isArray(b.children)){const hit=locate(id,b.children,b);if(hit)return hit;}if(Array.isArray(b.columns)){for(const col of b.columns){const hit=locate(id,col,b);if(hit)return hit;}}}return null;}
+function getSelected(){return selectedId?locate(selectedId)?.block||null:null;}
+function addBlock(type){snapshot();const b=block(type),loc=selectedId?locate(selectedId):null; if(loc?.block.type==="section"){loc.block.children=loc.block.children||[];loc.block.children.push(b);}else if(loc?.block.type==="columns"){loc.block.columns=loc.block.columns||[[],[]];loc.block.columns[selectedColumn].push(b);}else schema.blocks.push(b);selectedId=b.id;updateState();}
+function duplicateBlock(id){const loc=locate(id);if(!loc)return;snapshot();const copy=structuredClone(loc.block);copy.id=uid();loc.list.splice(loc.index+1,0,copy);selectedId=copy.id;updateState();}
 function setSaveState(v){const el=$("#save-state");if(el)el.textContent=v;}
 function renderBlock(b){
  const p=b.props||{},id=safe(b.id),style=(bg,color,pad)=>`style="background:${safe(bg||"transparent")};color:${safe(color||"#26352e")};padding:${Number(pad)||0}px"`;
  let body="";
  if(b.type==="hero")body=`<div class="block-hero" ${style(p.background,p.color,p.padding)}><div class="hero-copy"><span class="block-eyebrow">${safe(p.eyebrow)}</span><h1>${safe(p.title)}</h1><p>${safe(p.text)}</p></div>${p.image?`<img src="${safe(safeUrl(p.image))}" alt="">`:""}</div>`;
- else if(b.type==="section")body=`<div class="block-section" ${style(p.background,p.color,p.padding)}><h2>${safe(p.title)}</h2><p>${safe(p.text)}</p></div>`;
- else if(b.type==="columns")body=`<div class="block-columns" ${style(p.background,p.color,p.padding)}><div><h3>${safe(p.leftTitle)}</h3><p>${safe(p.leftText)}</p></div><div><h3>${safe(p.rightTitle)}</h3><p>${safe(p.rightText)}</p></div></div>`;
+ else if(b.type==="section")body=`<div class="block-section" ${style(p.background,p.color,p.padding)}><h2>${safe(p.title)}</h2><p>${safe(p.text)}</p><div class="nested-dropzone">${(b.children||[]).map(renderBlock).join("")||'<div class="nested-empty">Add elements here using the left panel</div>'}</div></div>`;
+ else if(b.type==="columns"){const cols=b.columns||[[],[]];body=`<div class="block-columns" ${style(p.background,p.color,p.padding)}>${[0,1].map(i=>`<div class="nested-column ${selectedColumn===i&&selectedId===b.id?"target-column":""}"><h3>${safe(i===0?p.leftTitle:p.rightTitle)}</h3><p>${safe(i===0?p.leftText:p.rightText)}</p><div class="nested-dropzone">${(cols[i]||[]).map(renderBlock).join("")||'<div class="nested-empty">Add elements here</div>'}</div></div>`).join("")}</div>`;}
  else if(b.type==="heading")body=`<div class="block-heading" style="color:${safe(p.color)};font-size:${Number(p.fontSize)||34}px;text-align:${safe(p.align)};padding:${Number(p.padding)||0}px 8%"><span>${safe(p.text)}</span></div>`;
  else if(b.type==="text")body=`<div class="block-text" style="color:${safe(p.color)};font-size:${Number(p.fontSize)||14}px;text-align:${safe(p.align)};padding:${Number(p.padding)||0}px 8%"><span>${safe(p.text).replace(/\n/g,"<br>")}</span></div>`;
  else if(b.type==="image")body=p.image?`<div style="padding:${Number(p.padding)||0}px;text-align:${safe(p.align)}"><img class="block-image" style="width:${Math.min(100,Math.max(10,Number(p.width)||80))}%;border-radius:${Number(p.radius)||0}px" src="${safe(safeUrl(p.image))}" alt="${safe(p.alt)}"></div>`:`<div class="block-text">Add an image URL in the style panel.</div>`;
@@ -52,11 +53,11 @@ function renderInspector(){
  if(["hero","section","heading","text","button","shop-link","columns","features"].includes(b.type)){
   let fields="";
   if(b.type==="hero")fields=inputField("eyebrow","Eyebrow",p.eyebrow)+inputField("title","Headline",p.title,"textarea")+inputField("text","Description",p.text,"textarea")+inputField("image","Image URL",p.image);
-  if(b.type==="section")fields=inputField("title","Section heading",p.title)+inputField("text","Description",p.text,"textarea");
+  if(b.type==="section")fields=inputField("title","Section heading",p.title)+inputField("text","Description",p.text,"textarea")+'<p class="hint">Select this section, then add elements from the left panel to place them inside it.</p>';
   if(b.type==="heading")fields=inputField("text","Heading text",p.text,"textarea");
   if(b.type==="text")fields=inputField("text","Paragraph",p.text,"textarea");
   if(b.type==="button"||b.type==="shop-link")fields=inputField("text","Button label",p.text)+inputField("url","Button link",p.url);
-  if(b.type==="columns")fields=inputField("leftTitle","Left heading",p.leftTitle)+inputField("leftText","Left text",p.leftText,"textarea")+inputField("rightTitle","Right heading",p.rightTitle)+inputField("rightText","Right text",p.rightText,"textarea");
+  if(b.type==="columns")fields=inputField("leftTitle","Column 1 heading",p.leftTitle)+inputField("leftText","Column 1 text",p.leftText,"textarea")+inputField("rightTitle","Column 2 heading",p.rightTitle)+inputField("rightText","Column 2 text",p.rightText,"textarea")+inspectorGroup("ADD ELEMENTS INSIDE COLUMNS",'<div class="column-targets"><button type="button" data-column-target="0" class="'+(selectedColumn===0?"active":"") +'">Add to column 1</button><button type="button" data-column-target="1" class="'+(selectedColumn===1?"active":"") +'">Add to column 2</button></div><p class="hint">Choose a target, then click an element in the left panel.</p>');
   if(b.type==="features")for(let i=1;i<=3;i++)fields+=inputField("card"+i+"Title","Card "+i+" heading",p["card"+i+"Title"])+inputField("card"+i+"Text","Card "+i+" text",p["card"+i+"Text"],"textarea");
   content+=inspectorGroup("CONTENT",fields);
  }
@@ -70,8 +71,8 @@ function renderInspector(){
  wrap.innerHTML=content;
 }
 function mutate(key,value){const b=getSelected();if(!b)return;snapshot();b.props[key]=value;renderBlocks();renderInspector();}
-function moveBlock(id,delta){const i=schema.blocks.findIndex(b=>b.id===id),j=i+delta;if(i<0||j<0||j>=schema.blocks.length)return;snapshot();const [item]=schema.blocks.splice(i,1);schema.blocks.splice(j,0,item);selectedId=id;updateState();}
-function removeBlock(id){snapshot();schema.blocks=schema.blocks.filter(b=>b.id!==id);selectedId=null;updateState();}
+function moveBlock(id,delta){const loc=locate(id);if(!loc)return;const j=loc.index+delta;if(j<0||j>=loc.list.length)return;snapshot();const [item]=loc.list.splice(loc.index,1);loc.list.splice(j,0,item);selectedId=id;updateState();}
+function removeBlock(id){const loc=locate(id);if(!loc)return;snapshot();loc.list.splice(loc.index,1);selectedId=loc.parent?.id||null;updateState();}
 function restoreStack(from,to){if(!from.length)return;to.push(JSON.stringify(schema));schema=JSON.parse(from.pop());selectedId=schema.blocks.at(-1)?.id||null;updateState();setSaveState("Unsaved changes");}
 function undo(){restoreStack(undoStack,redoStack)}function redo(){restoreStack(redoStack,undoStack)}
 function setDevice(device){const c=$("#page-canvas");c.classList.toggle("mobile",device==="mobile");c.classList.toggle("desktop",device==="desktop");$("#desktop-btn").classList.toggle("active",device==="desktop");$("#mobile-btn").classList.toggle("active",device==="mobile");$("#canvas-device-label").textContent=device==="mobile"?"Mobile · 390 px":"Desktop · 1440 px";}
@@ -95,7 +96,8 @@ $("#login-form").addEventListener("submit",async e=>{e.preventDefault();const f=
 db.auth.onAuthStateChange((_event,s)=>{if(s&&!session)setTimeout(()=>enterBuilder().catch(e=>$("#login-message").textContent=e.message),0);if(!s&&session){session=null;location.reload();}});
 document.addEventListener("click",e=>{
  const add=e.target.closest("[data-add]");if(add)addBlock(add.dataset.add);
- const blockEl=e.target.closest("[data-block-id]");if(blockEl&&!e.target.closest(".block-tools")){selectedId=blockEl.dataset.blockId;renderBlocks();renderInspector();}
+ const targetColumn=e.target.closest("[data-column-target]");if(targetColumn){selectedColumn=Number(targetColumn.dataset.columnTarget);renderBlocks();renderInspector();}
+ const blockEl=e.target.closest("[data-block-id]");if(blockEl&&!e.target.closest(".block-tools")){selectedId=blockEl.dataset.blockId;const selected=getSelected();if(selected?.type==="columns")selectedColumn=0;renderBlocks();renderInspector();}
  const up=e.target.closest("[data-move-up]");if(up)moveBlock(up.dataset.moveUp,-1);
  const down=e.target.closest("[data-move-down]");if(down)moveBlock(down.dataset.moveDown,1);
  const duplicate=e.target.closest("[data-duplicate]");if(duplicate)duplicateBlock(duplicate.dataset.duplicate);
@@ -109,7 +111,7 @@ $("#inspector").addEventListener("input",e=>{const el=e.target;if(!el.dataset.pr
 $("#inspector").addEventListener("change",e=>{const el=e.target;if(el.dataset.prop){const b=getSelected();if(b){b.props[el.dataset.prop]=el.type==="number"?Number(el.value):el.value;setSaveState("Unsaved changes");}}});
 $("#blocks-list").addEventListener("dragstart",e=>{const el=e.target.closest("[data-block-id]");if(!el)return;dragId=el.dataset.blockId;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",dragId);});
 $("#blocks-list").addEventListener("dragover",e=>{if(e.target.closest("[data-block-id]"))e.preventDefault();});
-$("#blocks-list").addEventListener("drop",e=>{e.preventDefault();const target=e.target.closest("[data-block-id]");if(!target||!dragId||dragId===target.dataset.blockId)return;const from=schema.blocks.findIndex(b=>b.id===dragId),to=schema.blocks.findIndex(b=>b.id===target.dataset.blockId);if(from<0||to<0)return;snapshot();const [moved]=schema.blocks.splice(from,1);schema.blocks.splice(to,0,moved);selectedId=dragId;dragId=null;updateState();});
+$("#blocks-list").addEventListener("drop",e=>{e.preventDefault();const target=e.target.closest("[data-block-id]");if(!target||!dragId||dragId===target.dataset.blockId){dragId=null;return;}const from=locate(dragId),to=locate(target.dataset.blockId);if(!from||!to||from.parent?.id!==to.parent?.id){dragId=null;return;}snapshot();const [moved]=from.list.splice(from.index,1);const fresh=locate(target.dataset.blockId);fresh.list.splice(fresh.index,0,moved);selectedId=dragId;dragId=null;updateState();});
 $("#undo-btn").onclick=undo;$("#redo-btn").onclick=redo;
 document.addEventListener("keydown",e=>{const mod=e.metaKey||e.ctrlKey;if(!mod||e.altKey)return;const tag=document.activeElement?.tagName;if(["INPUT","TEXTAREA","SELECT"].includes(tag))return;if(e.key.toLowerCase()==="z"){e.preventDefault();e.shiftKey?redo():undo();}else if(e.key.toLowerCase()==="y"){e.preventDefault();redo();}});$("#desktop-btn").onclick=()=>setDevice("desktop");$("#mobile-btn").onclick=()=>setDevice("mobile");
 $("#preview-page").textContent="Open live site ↗";$("#preview-page").onclick=()=>window.open("index.html","_blank","noopener");
