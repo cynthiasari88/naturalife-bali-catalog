@@ -29,3 +29,12 @@ The repository must be connected to Vercel (or another static host) before the u
 
 ## Local preview
 Open `index.html` in a browser. A live connection to the Supabase project is required for catalog and checkout functionality.
+
+ 
+## Visual Website Builder
+- Open `/visual-builder.html` from the admin panel's Visual Website Builder link.
+- The editor uses the existing Supabase Auth session and the `is_store_admin()` authorization check.
+- Drafts are stored in `public.store_homepage_pages` with slug `homepage-draft`.
+- Publishing writes the live page to slug `homepage`; the storefront reads only published pages.
+- The editor supports hero banners, sections, two-column content, headings, text, images, buttons, feature cards and spacing blocks.
+- Existing product catalog, cart, checkout, and order flows remain in place beneath the visual homepage content.
