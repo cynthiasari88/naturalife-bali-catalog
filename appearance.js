@@ -8,6 +8,8 @@
   const DEVICES = { desktop: 1280, tablet: 820, mobile: 390 };
   let leaving = false, saved = null, state = null, loaded = false, loading = false, device = "desktop", frameStarted = false;
 
+  const say = (sel, text, ok) => { const el = $(sel); if (!el) return; el.textContent = text; el.style.color = ok ? "#52795a" : "#a24b3e"; };
+  const withTimeout = (promise, ms) => Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error("The database did not respond within " + ms / 1000 + " seconds. Check your internet connection and click Retry.")), ms))]);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const clone = o => JSON.parse(JSON.stringify(o));
   const same = (a, b) => JSON.stringify(T.normalize(a)) === JSON.stringify(T.normalize(b));
@@ -188,8 +190,8 @@
     const dirty = isDirty();
     el.className = "ap-status " + (tone || (dirty ? "dirty" : "clean"));
     el.textContent = text || (dirty ? "Unsaved changes — visible in the preview only" : "All changes are live on your storefront");
-    $("#ap-save").disabled = !dirty;
-    $("#ap-discard").disabled = !dirty;
+    $("#ap-save").disabled = !dirty || !state;
+    $("#ap-discard").disabled = !dirty || !state;
   }
 
   function setValue(key, value, fromPreset) {
@@ -298,10 +300,10 @@
     loading = true;
     refreshStatus("Loading your theme…", "busy");
     try {
-      const [themeRes, settingsRes] = await Promise.all([
+      const [themeRes, settingsRes] = await withTimeout(Promise.all([
         db.from("store_homepage_pages").select("page_schema,updated_at").eq("slug", SLUG).maybeSingle(),
         db.from("store_settings").select("primary_color,background_color,catalog_columns,show_hero").eq("id", true).maybeSingle()
-      ]);
+      ]), 15000);
       if (themeRes.error) throw new Error("Could not load the saved theme: " + themeRes.error.message);
       let theme = themeRes.data?.page_schema?.theme;
       if (!theme) {
@@ -318,8 +320,8 @@
       render();
       $("#appearance-message").textContent = "";
     } catch (err) {
-      if (!state) { saved = T.normalize({}); state = clone(saved); render(); }
-      setMessage("#appearance-message", (err.message || "Could not load the theme.") + " You can still edit; publishing will retry.");
+      $("#ap-groups").innerHTML = '<div class="ap-load-error"><strong>Your theme could not be loaded.</strong><p>' + esc(err.message || "Unknown error.") + '</p><button type="button" class="btn primary" id="ap-retry">Retry</button></div>';
+      $("#ap-retry").onclick = () => loadAppearance(true);
       refreshStatus("Theme could not be loaded", "error");
     } finally { loading = false; }
   }
@@ -330,9 +332,9 @@
     refreshStatus("Publishing…", "busy");
     try {
       const theme = T.normalize(state), now = new Date().toISOString();
-      const { error } = await db.from("store_homepage_pages").upsert(
+      const { error } = await withTimeout(db.from("store_homepage_pages").upsert(
         { slug: SLUG, title: "Site theme", status: "published", page_schema: { version: 1, blocks: [], theme }, updated_at: now, published_at: now },
-        { onConflict: "slug" });
+        { onConflict: "slug" }), 20000);
       if (error) throw new Error("Publishing failed: " + error.message);
       // Keep the original store_settings fields in step, so older code and other forms stay consistent.
       const legacy = { primary_color: theme.primary, background_color: theme.background, catalog_columns: theme.columns_desktop, show_hero: theme.show_hero };
@@ -340,10 +342,10 @@
       if (res.error) console.warn("store_settings sync skipped:", res.error.message);
       else if (typeof settingsRow !== "undefined" && settingsRow) Object.assign(settingsRow, legacy);
       saved = clone(theme); state = clone(theme);
-      setMessage("#appearance-message", "Published. Visitors see the new look on their next page load.", true);
+      say("#appearance-message", "Published. Visitors see the new look on their next page load.", true);
       refreshStatus();
     } catch (err) {
-      setMessage("#appearance-message", err.message || "Publishing failed.");
+      say("#appearance-message", err.message || "Publishing failed.");
       refreshStatus("Not published — see the message below", "error");
       btn.disabled = false;
     }
@@ -372,8 +374,9 @@
       e.target.value = "";
     });
     $("#ap-save").onclick = publish;
-    $("#ap-discard").onclick = () => { if (!saved) return; state = clone(saved); syncInputs(); refresh(); setMessage("#appearance-message", "Changes discarded.", true); };
+    $("#ap-discard").onclick = () => { if (!saved) return; state = clone(saved); syncInputs(); refresh(); say("#appearance-message", "Changes discarded.", true); };
     $("#ap-reset").onclick = () => {
+      if (!state) return;
       if (!confirm("Reset every appearance setting to the original Naturalife look? Nothing changes on your live site until you publish.")) return;
       state = T.normalize({ ...T.DEFAULTS, hero_image: state.hero_image, custom_css: state.custom_css });
       syncInputs(); refresh();
@@ -396,5 +399,12 @@
   }
 
   window.loadAppearance = loadAppearance;
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+  function watchView() {
+    const view = $("#view-appearance"); if (!view) return;
+    const check = () => { if (!view.classList.contains("hidden")) loadAppearance(); };
+    new MutationObserver(check).observe(view, { attributes: true, attributeFilter: ["class"] });
+    check();
+  }
+  const boot = () => { init(); watchView(); };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

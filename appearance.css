@@ -127,3 +127,6 @@ input[type=range]{width:100%;accent-color:var(--green)}
   #view-appearance{padding-bottom:120px}
 }
 @media(prefers-reduced-motion:reduce){.ap-status.busy::before{animation:none}.ap-toggle input::after,.ap-group>summary::after{transition:none}}
+.ap-load-error{background:var(--paper);border:1px solid #ecd3cc;border-radius:12px;padding:18px 20px;display:grid;gap:8px;justify-items:start}
+.ap-load-error strong{color:#a24b3e;font-size:13px}
+.ap-load-error p{margin:0;font-size:12px;color:#6b5a55;line-height:1.6}
