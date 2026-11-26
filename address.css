@@ -1,0 +1,15 @@
+/* Naturalife Bali — checkout address form */
+.checkout-dialog .form-grid select{appearance:none;-webkit-appearance:none;background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2378837b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:12px 8px;padding-right:36px;min-height:42px;cursor:pointer}
+.checkout-dialog .form-grid select:disabled{background-color:var(--ivory,#f6f5ef);color:var(--muted,#78837b);cursor:not-allowed;opacity:.8}
+.checkout-dialog .form-grid :is(input,textarea,select):user-invalid{border-color:#c0705f;box-shadow:0 0 0 3px rgba(192,112,95,.12)}
+.checkout-dialog .field-hint{font-size:10.5px;font-weight:400;line-height:1.5;color:var(--muted,#78837b)}
+.checkout-dialog .field-hint:empty{display:none}
+.checkout-dialog .label-optional{font-weight:400;color:var(--muted,#78837b)}
+.checkout-dialog [hidden]{display:none!important}
+.checkout-dialog .addr-note{margin:0;padding:10px 12px;border-radius:8px;background:#fdf3e2;color:#87601f;font-size:11.5px;line-height:1.6}
+.checkout-dialog .address-preview{grid-column:1/-1;padding:12px 14px;border:1px dashed var(--line,#e7e8df);border-radius:9px;background:var(--ivory,#f6f5ef)}
+.checkout-dialog .address-preview>span{font-size:11px;font-weight:700;color:var(--green,#244b3c)}
+.checkout-dialog .address-preview p{margin:4px 0 0;font-size:12.5px;line-height:1.65;color:var(--ink,#26352e);overflow-wrap:anywhere}
+.checkout-dialog .form-grid label.remember{flex-direction:row;align-items:center;gap:9px;font-weight:500;color:var(--ink,#26352e);cursor:pointer}
+.checkout-dialog .form-grid label.remember input{width:18px;height:18px;margin:0;flex-shrink:0;accent-color:var(--green,#244b3c)}
+.checkout-dialog .form-grid :is(input,textarea)::placeholder{color:var(--muted,#78837b);opacity:.6}
