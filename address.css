@@ -13,3 +13,26 @@
 .checkout-dialog .form-grid label.remember{flex-direction:row;align-items:center;gap:9px;font-weight:500;color:var(--ink,#26352e);cursor:pointer}
 .checkout-dialog .form-grid label.remember input{width:18px;height:18px;margin:0;flex-shrink:0;accent-color:var(--green,#244b3c)}
 .checkout-dialog .form-grid :is(input,textarea)::placeholder{color:var(--muted,#78837b);opacity:.6}
+/* shipping options */
+.checkout-dialog .shipping-box{grid-column:1/-1;border:0;margin:0;padding:0;min-width:0;display:grid;gap:8px}
+.checkout-dialog .shipping-box legend{padding:0;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--muted,#78837b)}
+.checkout-dialog .ship-hint{margin:0;padding:12px 14px;border-radius:9px;background:var(--ivory,#f6f5ef);font-size:12px;line-height:1.6;color:var(--muted,#78837b)}
+.checkout-dialog .ship-warn{background:#fdf3e2;color:#87601f}
+.checkout-dialog .ship-loading{animation:ship-pulse 1.1s ease-in-out infinite alternate}
+.checkout-dialog .ship-retry{border:0;background:none;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline;cursor:pointer}
+.checkout-dialog .ship-options{display:grid;gap:8px}
+.checkout-dialog .form-grid label.ship-option{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line,#e7e8df);border-radius:10px;background:#fff;cursor:pointer;font-weight:400;transition:border-color .15s,box-shadow .15s}
+.checkout-dialog .form-grid label.ship-option:hover{border-color:var(--green-mid,#426b55)}
+.checkout-dialog .form-grid label.ship-option:has(input:checked){border-color:var(--green,#244b3c);box-shadow:0 0 0 1px var(--green,#244b3c)}
+.checkout-dialog .form-grid label.ship-option input{width:18px;height:18px;margin:0;accent-color:var(--green,#244b3c)}
+.checkout-dialog .ship-text{display:grid;gap:2px;min-width:0}
+.checkout-dialog .ship-text strong{font-size:13px;color:var(--ink,#26352e)}
+.checkout-dialog .ship-text small{font-size:11px;color:var(--muted,#78837b)}
+.checkout-dialog .ship-price{font-size:13px;font-weight:700;color:var(--ink,#26352e);font-variant-numeric:tabular-nums;white-space:nowrap}
+.checkout-dialog .checkout-total:has(+ .ship-row:not([hidden])){padding-bottom:6px}
+.checkout-dialog .checkout-total.ship-row{border-top:0;margin-top:0;padding-top:0;padding-bottom:14px}
+.checkout-dialog .checkout-total.ship-grand{margin-top:0}
+.checkout-dialog .checkout-total.ship-grand{font-size:16px}
+.checkout-dialog .checkout-total.ship-grand strong{color:var(--green,#244b3c)}
+@keyframes ship-pulse{from{opacity:1}to{opacity:.55}}
+@media(prefers-reduced-motion:reduce){.checkout-dialog .ship-loading{animation:none}}

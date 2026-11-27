@@ -182,6 +182,7 @@
     const { full } = compose();
     box.hidden = !full;
     box.querySelector("p").textContent = full;
+    form.dispatchEvent(new CustomEvent("nl-address-change"));
   }
 
   /* ---------- remember me ---------- */
@@ -257,6 +258,21 @@
       return { ok: true, name, phone: phone ? "+" + phone : "", address: a.address, city: a.city, postal_code: a.postal };
     },
     remember: save,
+    /** Postal code used for shipping rates: the typed/auto-filled one, else the most common code in the chosen district. */
+    ratePostal() {
+      const pc = f("postal_code").value.trim();
+      if (/^\d{5}$/.test(pc)) return pc;
+      if (manual) return "";
+      const { dis } = sel();
+      if (!dis) return "";
+      const count = {};
+      dis[1].forEach(v => { count[v[1]] = (count[v[1]] || 0) + 1; });
+      return Object.keys(count).sort((a, b) => count[b] - count[a])[0] || "";
+    },
+    region() {
+      const { prov, reg, dis } = sel();
+      return { province: prov ? prov[1] : "", regency: reg ? reg[0] : "", district: dis ? dis[0] : "" };
+    },
     open: async () => { await initProvinces(); await restore(); update(); }
   };
 

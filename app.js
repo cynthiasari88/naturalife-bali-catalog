@@ -241,6 +241,7 @@ $("#checkout-form").onsubmit = async event => {
     city: addr ? addr.city : String(data.get("city") || "").trim(),
     postal_code: addr ? addr.postal_code : String(data.get("postal_code") || "").trim(),
     preferred_courier: courierMap[data.get("courier")] || "jne_regular",
+    ...(window.NLShipping ? window.NLShipping.payload() : {}),
     fulfillment_type: "delivery",
     delivery_instructions: String(data.get("delivery_notes") || "").trim(),
     payment_method: data.get("payment_method") === "QRIS" ? "qris" : "bank_transfer",
@@ -255,7 +256,8 @@ $("#checkout-form").onsubmit = async event => {
     const response = await fetch(ORDER_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY }, body: JSON.stringify(payload) });
     const result = await response.json();
     if (!response.ok || !result.ok) throw new Error(result.error || "Order submission failed");
-    message.textContent = t("success") + result.order_number + ". " + (lang === "id" ? "Admin akan menghubungi Anda melalui WhatsApp untuk konfirmasi ongkir dan pembayaran." : lang === "ru" ? "Администратор свяжется с вами в WhatsApp для подтверждения доставки и оплаты." : "Admin will contact you on WhatsApp to confirm shipping and payment.");
+    const paidTotal = result.shipping_confirmed ? (lang === "id" ? " Total termasuk ongkir: " : lang === "ru" ? " Итого с доставкой: " : " Total including shipping: ") + money(result.total) + ". " + (lang === "id" ? "Admin akan cek stok lalu mengirim detail pembayaran lewat WhatsApp." : lang === "ru" ? "Администратор проверит наличие и пришлёт реквизиты для оплаты в WhatsApp." : "Admin will check stock, then send payment details on WhatsApp.") : "";
+    if (paidTotal) message.textContent = t("success") + result.order_number + "." + paidTotal; else message.textContent = t("success") + result.order_number + ". " + (lang === "id" ? "Admin akan menghubungi Anda melalui WhatsApp untuk konfirmasi ongkir dan pembayaran." : lang === "ru" ? "Администратор свяжется с вами в WhatsApp для подтверждения доставки и оплаты." : "Admin will contact you on WhatsApp to confirm shipping and payment.");
     if (window.NLAddress) window.NLAddress.remember();
     cart = {};
     form.reset();
