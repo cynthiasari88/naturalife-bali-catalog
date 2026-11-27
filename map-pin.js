@@ -4,8 +4,12 @@
   "use strict";
   const LEAFLET_JS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
   const LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
-  const TILES = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-  const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+  // Free tile servers that need no API key. If the first fails to load, the map switches to the next one.
+  const OSM = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
+  const TILE_PROVIDERS = [
+    { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", options: { maxZoom: 19, attribution: OSM } },
+    { url: "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", options: { maxZoom: 19, subdomains: "abc", attribution: OSM + ', tiles &copy; <a href="https://www.openstreetmap.fr" target="_blank" rel="noopener">OpenStreetMap France</a>' } }
+  ];
   let loading = null;
 
   function loadLeaflet() {
@@ -42,7 +46,18 @@
 
     const start = opts.value ? [opts.value.lat, opts.value.lng] : opts.center;
     const map = L.map(mapEl, { center: start, zoom: opts.value ? 16 : (opts.zoom || 12), scrollWheelZoom: false, tap: true });
-    L.tileLayer(TILES, { maxZoom: 19, subdomains: "abcd", attribution: ATTRIBUTION }).addTo(map);
+    let provider = 0, layer = null, loaded = 0, failed = 0;
+    const useProvider = i => {
+      if (layer) map.removeLayer(layer);
+      loaded = 0; failed = 0;
+      layer = L.tileLayer(TILE_PROVIDERS[i].url, TILE_PROVIDERS[i].options).addTo(map);
+      layer.on("tileload", () => { loaded++; });
+      layer.on("tileerror", () => {
+        failed++;
+        if (!loaded && failed >= 3 && provider < TILE_PROVIDERS.length - 1) useProvider(++provider);
+      });
+    };
+    useProvider(0);
     const icon = L.divIcon({ className: "pin-marker", html: '<span></span>', iconSize: [30, 42], iconAnchor: [15, 40] });
     let marker = null;
 
@@ -68,7 +83,11 @@
       status.textContent = t.locating || "Finding your location…";
       navigator.geolocation.getCurrentPosition(
         pos => place(L.latLng(pos.coords.latitude, pos.coords.longitude), true),
-        () => { status.textContent = t.locationDenied || "Location permission was denied. Tap the map instead."; },
+        err => {
+          status.textContent = err && err.code === 1 ? (t.locationDenied || "Location permission was denied. Tap the map instead.")
+            : err && err.code === 3 ? (t.locationTimeout || "Finding your location took too long. Tap the map instead.")
+            : (t.locationNotFound || "Your location could not be found. Tap the map instead.");
+        },
         { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
       );
     };
