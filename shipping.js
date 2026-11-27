@@ -7,9 +7,9 @@
   if (!form || !box) return;
 
   const COPY = {
-    en: { title: "Shipping", pickDistrict: "Choose your district above to see shipping options and costs.", loading: "Calculating shipping costs…", failed: "Live shipping costs are unavailable right now. Choose a courier and admin will confirm the cost on WhatsApp.", none: "No JNE service reaches this postal code. Choose an option below and admin will confirm the cost.", confirm: "cost confirmed by admin", baliOnly: "Bali only", fee: "Shipping", total: "Total", pending: "confirmed by admin", days: "days", day: "day", hours: "hours", liveNote: "Admin will check stock, then send payment details on WhatsApp.", retry: "Try again", required: "Please choose a shipping option." },
-    id: { title: "Pengiriman", pickDistrict: "Pilih kecamatan di atas untuk melihat pilihan dan ongkos kirim.", loading: "Menghitung ongkos kirim…", failed: "Ongkir otomatis sedang tidak tersedia. Pilih kurir, nanti admin konfirmasi ongkirnya lewat WhatsApp.", none: "Tidak ada layanan JNE ke kode pos ini. Pilih opsi di bawah, nanti admin konfirmasi ongkirnya.", confirm: "ongkir dikonfirmasi admin", baliOnly: "khusus Bali", fee: "Ongkos kirim", total: "Total", pending: "dikonfirmasi admin", days: "hari", day: "hari", hours: "jam", liveNote: "Admin akan cek stok, lalu kirim detail pembayaran lewat WhatsApp.", retry: "Coba lagi", required: "Silakan pilih pengiriman." },
-    ru: { title: "Доставка", pickDistrict: "Выберите район выше, чтобы увидеть варианты и стоимость доставки.", loading: "Расчёт стоимости доставки…", failed: "Автоматический расчёт доставки сейчас недоступен. Выберите курьера — администратор подтвердит стоимость в WhatsApp.", none: "JNE не доставляет на этот индекс. Выберите вариант ниже — администратор подтвердит стоимость.", confirm: "стоимость подтвердит администратор", baliOnly: "только Бали", fee: "Доставка", total: "Итого", pending: "подтвердит администратор", days: "дн.", day: "дн.", hours: "ч", liveNote: "Администратор проверит наличие и пришлёт реквизиты для оплаты в WhatsApp.", retry: "Повторить", required: "Пожалуйста, выберите способ доставки." }
+    en: { title: "Shipping", pickDistrict: "Choose your district above to see shipping options and costs.", loading: "Calculating shipping costs…", failed: "Live shipping costs are unavailable right now. Choose a courier and admin will confirm the cost on WhatsApp.", none: "No JNE service reaches this postal code. Choose an option below and admin will confirm the cost.", confirm: "cost confirmed by admin", baliOnly: "Bali only", fee: "Shipping", total: "Total", pending: "confirmed by admin", days: "days", day: "day", hours: "hours", liveNote: "Admin will check stock, then send payment details on WhatsApp.", retry: "Try again", required: "Please choose a shipping option.", emptyCart: "Your cart is empty. Add products to see shipping options and costs." },
+    id: { title: "Pengiriman", pickDistrict: "Pilih kecamatan di atas untuk melihat pilihan dan ongkos kirim.", loading: "Menghitung ongkos kirim…", failed: "Ongkir otomatis sedang tidak tersedia. Pilih kurir, nanti admin konfirmasi ongkirnya lewat WhatsApp.", none: "Tidak ada layanan JNE ke kode pos ini. Pilih opsi di bawah, nanti admin konfirmasi ongkirnya.", confirm: "ongkir dikonfirmasi admin", baliOnly: "khusus Bali", fee: "Ongkos kirim", total: "Total", pending: "dikonfirmasi admin", days: "hari", day: "hari", hours: "jam", liveNote: "Admin akan cek stok, lalu kirim detail pembayaran lewat WhatsApp.", retry: "Coba lagi", required: "Silakan pilih pengiriman.", emptyCart: "Keranjang Anda kosong. Tambahkan produk dulu untuk melihat pilihan dan ongkos kirim." },
+    ru: { title: "Доставка", pickDistrict: "Выберите район выше, чтобы увидеть варианты и стоимость доставки.", loading: "Расчёт стоимости доставки…", failed: "Автоматический расчёт доставки сейчас недоступен. Выберите курьера — администратор подтвердит стоимость в WhatsApp.", none: "JNE не доставляет на этот индекс. Выберите вариант ниже — администратор подтвердит стоимость.", confirm: "стоимость подтвердит администратор", baliOnly: "только Бали", fee: "Доставка", total: "Итого", pending: "подтвердит администратор", days: "дн.", day: "дн.", hours: "ч", liveNote: "Администратор проверит наличие и пришлёт реквизиты для оплаты в WhatsApp.", retry: "Повторить", required: "Пожалуйста, выберите способ доставки.", emptyCart: "Корзина пуста. Добавьте товары, чтобы увидеть варианты и стоимость доставки." }
   };
   const MANUAL = {
     jne_regular: { label: "JNE Regular", code: "jne_regular" },
@@ -56,7 +56,8 @@
     const legend = form.querySelector("[data-ship-title]");
     if (legend) legend.textContent = c("title");
     let html = "";
-    if (state.status === "idle") html = '<p class="ship-hint">' + esc(c("pickDistrict")) + "</p>";
+    if (state.status === "empty") html = '<p class="ship-hint ship-warn">' + esc(c("emptyCart")) + "</p>";
+    else if (state.status === "idle") html = '<p class="ship-hint">' + esc(c("pickDistrict")) + "</p>";
     else if (state.status === "loading") html = '<p class="ship-hint ship-loading">' + esc(c("loading")) + "</p>";
     else {
       if (state.status === "failed") html += '<p class="ship-hint ship-warn">' + esc(c("failed")) + ' <button type="button" class="ship-retry">' + esc(c("retry")) + "</button></p>";
@@ -97,9 +98,10 @@
   async function fetchRates(force) {
     const postal = window.NLAddress && window.NLAddress.ratePostal ? window.NLAddress.ratePostal() : "";
     const items = cartItems();
-    if (!postal || !items.length) { state = { ...state, key: "", postal: "", status: "idle", services: [] }; render(); return; }
+    if (!items.length) { state = { ...state, key: "", postal, status: "empty", services: [] }; render(); return; }
+    if (!postal) { state = { ...state, key: "", postal: "", status: "idle", services: [] }; render(); return; }
     const key = postal + "|" + JSON.stringify(items);
-    if (!force && key === state.key && state.status !== "idle") { render(); return; }
+    if (!force && key === state.key && state.status !== "idle" && state.status !== "empty") { render(); return; }
     const id = ++requestId;
     state = { ...state, key, postal, status: "loading", services: [] };
     render();
@@ -136,6 +138,8 @@
   });
   form.addEventListener("click", e => { if (e.target.closest(".ship-retry")) fetchRates(true); });
   form.addEventListener("nl-address-change", schedule);
+  form.addEventListener("change", e => { if (["province", "regency", "district", "village", "postal_code"].includes(e.target.name)) schedule(); });
+  form.addEventListener("input", e => { if (e.target.name === "postal_code") schedule(); });
   form.addEventListener("reset", () => setTimeout(() => { state = { key: "", postal: "", status: "idle", services: [], selected: "" }; render(); }, 0));
   const lang$ = document.getElementById("language");
   if (lang$) lang$.addEventListener("change", e => { lang = COPY[e.target.value] ? e.target.value : "en"; render(); });
