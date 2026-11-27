@@ -7,9 +7,9 @@
   if (!form || !box) return;
 
   const COPY = {
-    en: { title: "Shipping", pickDistrict: "Choose your district above to see shipping options and costs.", loading: "Calculating shipping costs…", failed: "Live shipping costs are unavailable right now. Choose a courier and admin will confirm the cost on WhatsApp.", none: "No JNE service reaches this postal code. Choose an option below and admin will confirm the cost.", confirm: "cost confirmed by admin", baliOnly: "Bali only", fee: "Shipping", total: "Total", pending: "confirmed by admin", days: "days", day: "day", hours: "hours", liveNote: "Admin will check stock, then send payment details on WhatsApp.", retry: "Try again", required: "Please choose a shipping option.", emptyCart: "Your cart is empty. Add products to see shipping options and costs." },
-    id: { title: "Pengiriman", pickDistrict: "Pilih kecamatan di atas untuk melihat pilihan dan ongkos kirim.", loading: "Menghitung ongkos kirim…", failed: "Ongkir otomatis sedang tidak tersedia. Pilih kurir, nanti admin konfirmasi ongkirnya lewat WhatsApp.", none: "Tidak ada layanan JNE ke kode pos ini. Pilih opsi di bawah, nanti admin konfirmasi ongkirnya.", confirm: "ongkir dikonfirmasi admin", baliOnly: "khusus Bali", fee: "Ongkos kirim", total: "Total", pending: "dikonfirmasi admin", days: "hari", day: "hari", hours: "jam", liveNote: "Admin akan cek stok, lalu kirim detail pembayaran lewat WhatsApp.", retry: "Coba lagi", required: "Silakan pilih pengiriman.", emptyCart: "Keranjang Anda kosong. Tambahkan produk dulu untuk melihat pilihan dan ongkos kirim." },
-    ru: { title: "Доставка", pickDistrict: "Выберите район выше, чтобы увидеть варианты и стоимость доставки.", loading: "Расчёт стоимости доставки…", failed: "Автоматический расчёт доставки сейчас недоступен. Выберите курьера — администратор подтвердит стоимость в WhatsApp.", none: "JNE не доставляет на этот индекс. Выберите вариант ниже — администратор подтвердит стоимость.", confirm: "стоимость подтвердит администратор", baliOnly: "только Бали", fee: "Доставка", total: "Итого", pending: "подтвердит администратор", days: "дн.", day: "дн.", hours: "ч", liveNote: "Администратор проверит наличие и пришлёт реквизиты для оплаты в WhatsApp.", retry: "Повторить", required: "Пожалуйста, выберите способ доставки.", emptyCart: "Корзина пуста. Добавьте товары, чтобы увидеть варианты и стоимость доставки." }
+    en: { pinTitle: "Delivery pin for GoSend / GrabExpress", pinHint: "Pin your house or villa on the map so instant courier fees are calculated automatically.", pinOpen: "Pin location on map", pinChange: "Change pin", pinDone: "Location pinned", pinForPrice: "pin your location on the map to see the fee", instantUnavailable: "not available for this pin · confirmed by admin", useMyLocation: "Use my location", locating: "Finding your location…", locationDenied: "Location permission was denied. Tap the map instead.", locationUnavailable: "Location is not available on this device.", tapHint: "Tap the map or drag the pin to your delivery spot.", pinned: "Pinned", loadingMap: "Loading map…", mapFailed: "The map could not be loaded. Admin will confirm the GoSend/Grab fee.", mapLabel: "Delivery location map", title: "Shipping", pickDistrict: "Choose your district above to see shipping options and costs.", loading: "Calculating shipping costs…", failed: "Live shipping costs are unavailable right now. Choose a courier and admin will confirm the cost on WhatsApp.", none: "No JNE service reaches this postal code. Choose an option below and admin will confirm the cost.", confirm: "cost confirmed by admin", baliOnly: "Bali only", fee: "Shipping", total: "Total", pending: "confirmed by admin", days: "days", day: "day", hours: "hours", liveNote: "Admin will check stock, then send payment details on WhatsApp.", retry: "Try again", required: "Please choose a shipping option.", emptyCart: "Your cart is empty. Add products to see shipping options and costs." },
+    id: { pinTitle: "Titik lokasi untuk GoSend / GrabExpress", pinHint: "Tandai rumah atau villa Anda di peta agar ongkir kurir instan dihitung otomatis.", pinOpen: "Tandai lokasi di peta", pinChange: "Ubah titik", pinDone: "Lokasi sudah ditandai", pinForPrice: "tandai lokasi di peta untuk melihat ongkir", instantUnavailable: "tidak tersedia untuk titik ini · dikonfirmasi admin", useMyLocation: "Gunakan lokasi saya", locating: "Mencari lokasi Anda…", locationDenied: "Izin lokasi ditolak. Silakan ketuk peta.", locationUnavailable: "Lokasi tidak tersedia di perangkat ini.", tapHint: "Ketuk peta atau geser pin ke titik pengiriman.", pinned: "Titik dipilih", loadingMap: "Memuat peta…", mapFailed: "Peta gagal dimuat. Ongkir GoSend/Grab akan dikonfirmasi admin.", mapLabel: "Peta lokasi pengiriman", title: "Pengiriman", pickDistrict: "Pilih kecamatan di atas untuk melihat pilihan dan ongkos kirim.", loading: "Menghitung ongkos kirim…", failed: "Ongkir otomatis sedang tidak tersedia. Pilih kurir, nanti admin konfirmasi ongkirnya lewat WhatsApp.", none: "Tidak ada layanan JNE ke kode pos ini. Pilih opsi di bawah, nanti admin konfirmasi ongkirnya.", confirm: "ongkir dikonfirmasi admin", baliOnly: "khusus Bali", fee: "Ongkos kirim", total: "Total", pending: "dikonfirmasi admin", days: "hari", day: "hari", hours: "jam", liveNote: "Admin akan cek stok, lalu kirim detail pembayaran lewat WhatsApp.", retry: "Coba lagi", required: "Silakan pilih pengiriman.", emptyCart: "Keranjang Anda kosong. Tambahkan produk dulu untuk melihat pilihan dan ongkos kirim." },
+    ru: { pinTitle: "Точка доставки для GoSend / GrabExpress", pinHint: "Отметьте дом или виллу на карте, чтобы стоимость экспресс-доставки рассчиталась автоматически.", pinOpen: "Отметить на карте", pinChange: "Изменить точку", pinDone: "Точка отмечена", pinForPrice: "отметьте точку на карте, чтобы увидеть стоимость", instantUnavailable: "недоступно для этой точки · подтвердит администратор", useMyLocation: "Моё местоположение", locating: "Определяем местоположение…", locationDenied: "Доступ к геолокации запрещён. Нажмите на карту.", locationUnavailable: "Геолокация недоступна на этом устройстве.", tapHint: "Нажмите на карту или перетащите метку к месту доставки.", pinned: "Точка выбрана", loadingMap: "Загрузка карты…", mapFailed: "Не удалось загрузить карту. Стоимость GoSend/Grab подтвердит администратор.", mapLabel: "Карта точки доставки", title: "Доставка", pickDistrict: "Выберите район выше, чтобы увидеть варианты и стоимость доставки.", loading: "Расчёт стоимости доставки…", failed: "Автоматический расчёт доставки сейчас недоступен. Выберите курьера — администратор подтвердит стоимость в WhatsApp.", none: "JNE не доставляет на этот индекс. Выберите вариант ниже — администратор подтвердит стоимость.", confirm: "стоимость подтвердит администратор", baliOnly: "только Бали", fee: "Доставка", total: "Итого", pending: "подтвердит администратор", days: "дн.", day: "дн.", hours: "ч", liveNote: "Администратор проверит наличие и пришлёт реквизиты для оплаты в WhatsApp.", retry: "Повторить", required: "Пожалуйста, выберите способ доставки.", emptyCart: "Корзина пуста. Добавьте товары, чтобы увидеть варианты и стоимость доставки." }
   };
   const MANUAL = {
     jne_regular: { label: "JNE Regular", code: "jne_regular" },
@@ -26,7 +26,13 @@
   const subtotal = () => (typeof cartTotal === "function" ? cartTotal() : 0);
 
   const DEBUG = /[?&]debug=1\b/.test(location.search);
-  let state = { key: "", postal: "", status: "idle", services: [], selected: "", reason: "" };
+  const BALI_CENTERS = { "Kabupaten Jembrana": [-8.3573, 114.6369], "Kabupaten Tabanan": [-8.5395, 115.131], "Kabupaten Badung": [-8.6019, 115.1791], "Kabupaten Gianyar": [-8.5409, 115.3241], "Kabupaten Klungkung": [-8.5344, 115.403], "Kabupaten Bangli": [-8.4618, 115.3525], "Kabupaten Karangasem": [-8.4388, 115.6122], "Kabupaten Buleleng": [-8.1252, 115.0928], "Kota Denpasar": [-8.6545, 115.2165] };
+  const PIN_KEY = "nl-pin-v1";
+  let state = { key: "", postal: "", status: "idle", services: [], selected: "", reason: "", instant: false, coords: null, pinDistrict: "" };
+  try { const saved = JSON.parse(localStorage.getItem(PIN_KEY) || "null"); if (saved && saved.lat && saved.lng) { state.coords = { lat: saved.lat, lng: saved.lng }; state.pinDistrict = saved.district || ""; } } catch (e) { /* ignore */ }
+  let mapCtl = null;
+  const region = () => (window.NLAddress && window.NLAddress.region ? window.NLAddress.region() : {});
+  const isBali = () => /^bali$/i.test(region().province || "");
   let requestId = 0, timer = 0;
 
   function eta(s) {
@@ -49,8 +55,10 @@
     if (state.status === "failed" || (state.status === "ready" && !state.services.length)) {
       ["jne_regular", "jne_trucking"].forEach(k => list.push({ value: "manual:" + k, title: MANUAL[k].label, meta: c("confirm") }));
     }
-    if (bali && (state.status === "ready" || state.status === "failed")) {
-      ["gosend", "grabexpress"].forEach(k => list.push({ value: "manual:" + k, title: MANUAL[k].label, meta: c("baliOnly") + " · " + c("confirm") }));
+    const liveInstant = state.services.some(s => s.courier !== "jne");
+    if (bali && !liveInstant && (state.status === "ready" || state.status === "failed")) {
+      const meta = state.status === "ready" && state.instant ? (state.coords ? c("instantUnavailable") : c("pinForPrice")) : c("baliOnly") + " · " + c("confirm");
+      ["gosend", "grabexpress"].forEach(k => list.push({ value: "manual:" + k, title: MANUAL[k].label, meta }));
     }
     return list;
   }
@@ -73,6 +81,7 @@
         '<span class="ship-price">' + (o.live ? esc(fmt(o.price)) : "—") + "</span></label>").join("") + "</div>";
     }
     box.innerHTML = html;
+    renderPin();
     const first = box.querySelector('input[name="ship_option"]');
     if (first) first.setCustomValidity(state.selected ? "" : c("required"));
     totals();
@@ -103,13 +112,16 @@
     const items = cartItems();
     if (!items.length) { state = { ...state, key: "", postal, status: "empty", services: [] }; render(); return; }
     if (!postal) { state = { ...state, key: "", postal: "", status: "idle", services: [] }; render(); return; }
-    const key = postal + "|" + JSON.stringify(items);
+    const district = region().district || "";
+    if (state.coords && state.pinDistrict && district && district !== state.pinDistrict) clearPin();
+    const pin = isBali() && state.coords ? state.coords : null;
+    const key = postal + "|" + JSON.stringify(items) + "|" + (pin ? pin.lat + "," + pin.lng : "");
     if (!force && key === state.key && state.status !== "idle" && state.status !== "empty") { render(); return; }
     const id = ++requestId;
     state = { ...state, key, postal, status: "loading", services: [] };
     render();
     try {
-      const r = await fetch(ORDER_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: "rates", postal_code: postal, items }) });
+      const r = await fetch(ORDER_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: "rates", postal_code: postal, items, ...(pin ? { latitude: pin.lat, longitude: pin.lng } : {}) }) });
       const body = await r.json().catch(() => ({}));
       if (id !== requestId) return;
       if (!r.ok || !body.ok || !Array.isArray(body.services)) {
@@ -118,6 +130,9 @@
       }
       state.status = "ready";
       state.services = body.services;
+      state.instant = !!body.instant;
+      const brand = { "manual:gosend": "gojek", "manual:grabexpress": "grab" }[state.selected];
+      if (brand) { const hit = state.services.filter(x => x.courier === brand).sort((x, y) => x.price - y.price)[0]; if (hit) state.selected = "live:" + hit.courier + ":" + hit.service; }
     } catch (e) {
       if (id !== requestId) return;
       console.warn("Shipping rates unavailable", e);
@@ -129,25 +144,81 @@
   }
   const schedule = () => { clearTimeout(timer); timer = setTimeout(() => fetchRates(false), 350); };
 
+  /* ---------- map pin for GoSend / GrabExpress ---------- */
+  const pinBox = document.createElement("div");
+  pinBox.className = "ship-pin";
+  pinBox.hidden = true;
+  pinBox.innerHTML = '<div class="ship-pin-head"><strong data-pin-title></strong><small data-pin-hint></small></div>' +
+    '<button type="button" class="ship-pin-open" data-pin-open></button><div class="ship-pin-map" data-pin-map hidden></div>';
+  box.insertAdjacentElement("afterend", pinBox);
+
+  function renderPin() {
+    const show = isBali() && state.instant && (state.status === "ready" || state.status === "loading" && !!mapCtl);
+    pinBox.hidden = !show;
+    if (!show) return;
+    pinBox.querySelector("[data-pin-title]").textContent = c("pinTitle");
+    pinBox.querySelector("[data-pin-hint]").textContent = state.coords ? c("pinDone") + " ✓" : c("pinHint");
+    const open = pinBox.querySelector("[data-pin-open]");
+    open.textContent = state.coords ? c("pinChange") : c("pinOpen");
+    open.hidden = !!mapCtl;
+    pinBox.classList.toggle("is-set", !!state.coords);
+  }
+  function mapText() {
+    return { useMyLocation: c("useMyLocation"), locating: c("locating"), locationDenied: c("locationDenied"), locationUnavailable: c("locationUnavailable"),
+      tapHint: c("tapHint"), pinned: c("pinned"), loading: c("loadingMap"), mapFailed: c("mapFailed"), mapLabel: c("mapLabel"), pinTitle: c("pinTitle") };
+  }
+  async function openMap() {
+    if (!window.NLMapPin) return;
+    const holder = pinBox.querySelector("[data-pin-map]");
+    holder.hidden = false;
+    pinBox.querySelector("[data-pin-open]").hidden = true;
+    if (mapCtl) { mapCtl.invalidate(); return; }
+    const center = BALI_CENTERS[region().regency] || [-8.65, 115.2167];
+    try {
+      mapCtl = await window.NLMapPin.mount(holder, { center, zoom: 12, value: state.coords, text: mapText(), onChange: setPin });
+    } catch (e) { console.warn("Map unavailable", e); }
+    holder.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  let pinTimer = 0;
+  function setPin(coords) {
+    state.coords = coords;
+    state.pinDistrict = region().district || "";
+    try { localStorage.setItem(PIN_KEY, JSON.stringify({ ...coords, district: state.pinDistrict })); } catch (e) { /* ignore */ }
+    renderPin();
+    clearTimeout(pinTimer);
+    pinTimer = setTimeout(() => fetchRates(false), 500);
+  }
+  function clearPin() {
+    state.coords = null; state.pinDistrict = "";
+    try { localStorage.removeItem(PIN_KEY); } catch (e) { /* ignore */ }
+    const holder = pinBox.querySelector("[data-pin-map]");
+    holder.innerHTML = ""; holder.hidden = true; mapCtl = null;
+  }
+  pinBox.querySelector("[data-pin-open]").onclick = openMap;
+
   window.NLShipping = {
     /** Fields to merge into the order payload. */
     payload() {
       const o = selectedOption();
       if (!o) return {};
-      if (o.live) return { preferred_courier: o.live.code, shipping: { courier: o.live.courier, service: o.live.service, price: o.live.price } };
-      return { preferred_courier: MANUAL[o.value.split(":")[1]].code };
+      const pin = state.coords && isBali() ? { latitude: state.coords.lat, longitude: state.coords.lng } : {};
+      if (o.live) return { preferred_courier: o.live.code, shipping: { courier: o.live.courier, service: o.live.service, price: o.live.price }, ...pin };
+      return { preferred_courier: MANUAL[o.value.split(":")[1]].code, ...pin };
     },
     refresh: () => fetchRates(false)
   };
 
   form.addEventListener("change", e => {
-    if (e.target.name === "ship_option") { state.selected = e.target.value; render(); }
+    if (e.target.name === "ship_option") {
+      state.selected = e.target.value; render();
+      if (/^manual:(gosend|grabexpress)$/.test(state.selected) && state.instant && !state.coords) openMap();
+    }
   });
   form.addEventListener("click", e => { if (e.target.closest(".ship-retry")) fetchRates(true); });
   form.addEventListener("nl-address-change", schedule);
   form.addEventListener("change", e => { if (["province", "regency", "district", "village", "postal_code"].includes(e.target.name)) schedule(); });
   form.addEventListener("input", e => { if (e.target.name === "postal_code") schedule(); });
-  form.addEventListener("reset", () => setTimeout(() => { state = { key: "", postal: "", status: "idle", services: [], selected: "" }; render(); }, 0));
+  form.addEventListener("reset", () => setTimeout(() => { state = { ...state, key: "", postal: "", status: "idle", services: [], selected: "" }; render(); }, 0));
   const lang$ = document.getElementById("language");
   if (lang$) lang$.addEventListener("change", e => { lang = COPY[e.target.value] ? e.target.value : "en"; render(); });
   const btn = document.getElementById("checkout-button");
