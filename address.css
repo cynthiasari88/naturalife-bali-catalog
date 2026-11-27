@@ -36,3 +36,4 @@
 .checkout-dialog .checkout-total.ship-grand strong{color:var(--green,#244b3c)}
 @keyframes ship-pulse{from{opacity:1}to{opacity:.55}}
 @media(prefers-reduced-motion:reduce){.checkout-dialog .ship-loading{animation:none}}
+.checkout-dialog .ship-debug{display:block;margin-top:6px;font-size:11px;word-break:break-word;color:#6b4a1f}

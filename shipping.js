@@ -25,7 +25,8 @@
   const cartItems = () => (typeof cart === "object" && cart ? Object.entries(cart).filter(([, q]) => q > 0).map(([product_id, qty]) => ({ product_id, qty })) : []);
   const subtotal = () => (typeof cartTotal === "function" ? cartTotal() : 0);
 
-  let state = { key: "", postal: "", status: "idle", services: [], selected: "" };
+  const DEBUG = /[?&]debug=1\b/.test(location.search);
+  let state = { key: "", postal: "", status: "idle", services: [], selected: "", reason: "" };
   let requestId = 0, timer = 0;
 
   function eta(s) {
@@ -60,7 +61,7 @@
     else if (state.status === "idle") html = '<p class="ship-hint">' + esc(c("pickDistrict")) + "</p>";
     else if (state.status === "loading") html = '<p class="ship-hint ship-loading">' + esc(c("loading")) + "</p>";
     else {
-      if (state.status === "failed") html += '<p class="ship-hint ship-warn">' + esc(c("failed")) + ' <button type="button" class="ship-retry">' + esc(c("retry")) + "</button></p>";
+      if (state.status === "failed") html += '<p class="ship-hint ship-warn">' + esc(c("failed")) + ' <button type="button" class="ship-retry">' + esc(c("retry")) + "</button>" + (DEBUG && state.reason ? '<br><code class="ship-debug">' + esc(state.reason) + "</code>" : "") + "</p>";
       else if (!state.services.length) html += '<p class="ship-hint ship-warn">' + esc(c("none")) + "</p>";
       const list = options();
       if (!list.some(o => o.value === state.selected)) state.selected = "";
@@ -109,7 +110,10 @@
       const r = await fetch(ORDER_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY }, body: JSON.stringify({ action: "rates", postal_code: postal, items }) });
       const body = await r.json().catch(() => ({}));
       if (id !== requestId) return;
-      if (!r.ok || !body.ok || !Array.isArray(body.services)) throw new Error(body.error || "HTTP " + r.status);
+      if (!r.ok || !body.ok || !Array.isArray(body.services)) {
+        const old = r.status === 400 && /Missing required order fields/.test(body.error || "");
+        throw new Error(old ? "OLD FUNCTION CODE: the new index.ts is not deployed in Supabase yet" : "HTTP " + r.status + (body.v ? " [" + body.v + "]" : "") + ": " + (body.reason || body.error || "no details"));
+      }
       state.status = "ready";
       state.services = body.services;
     } catch (e) {
@@ -117,6 +121,7 @@
       console.warn("Shipping rates unavailable", e);
       state.status = "failed";
       state.services = [];
+      state.reason = String(e && e.message || e);
     }
     render();
   }
