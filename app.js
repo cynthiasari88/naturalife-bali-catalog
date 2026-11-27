@@ -4,9 +4,9 @@ const ORDER_ENDPOINT = SUPABASE_URL + "/functions/v1/submit-store-order";
 const AUTH = { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY };
 
 const tr = {
-  en: { eyebrow:"GOOD FOOD · BETTER EVERYDAY", heroTitle:"Simple choices.<br><em>Feel-good living.</em>", heroText:"Discover quality ingredients and thoughtfully selected food products from Naturalife Bali.", browse:"Explore the catalog ↓", ourSelection:"OUR SELECTION", catalogTitle:"Shop the catalog", yourOrder:"YOUR ORDER", cartTitle:"Shopping cart", subtotal:"Subtotal", shippingNote:"Shipping is calculated and confirmed manually by our team.", checkout:"Continue to checkout", deliveryDetails:"DELIVERY DETAILS", checkoutTitle:"Almost there", fullName:"Recipient name", address:"Full delivery address", city:"City / District", postal:"Postal code", courier:"Preferred delivery", payment:"Payment preference", instructions:"Delivery instructions (optional)", shippingDisclaimer:"Shipping and payment details will be confirmed by admin via WhatsApp after stock checking.", submitOrder:"Submit order request", add:"Add", all:"All", search:"Search products…", empty:"Your cart is empty.", loading:"Loading products…", noProducts:"No products are currently available. Please check back soon.", unavailable:"Out of stock", success:"Your order request was received. Order number: ", failed:"We could not submit your order. Please try again or contact us on WhatsApp.", stock:"Stock", unit:"Unit" },
-  id: { eyebrow:"MAKAN BAIK · HIDUP LEBIH BAIK", heroTitle:"Pilihan sederhana.<br><em>Hidup lebih sehat.</em>", heroText:"Temukan bahan makanan berkualitas dan produk pilihan dari Naturalife Bali.", browse:"Jelajahi katalog ↓", ourSelection:"PILIHAN KAMI", catalogTitle:"Belanja katalog", yourOrder:"PESANAN ANDA", cartTitle:"Keranjang belanja", subtotal:"Subtotal", shippingNote:"Ongkir dihitung dan dikonfirmasi manual oleh tim kami.", checkout:"Lanjut ke checkout", deliveryDetails:"DETAIL PENGIRIMAN", checkoutTitle:"Hampir selesai", fullName:"Nama penerima", address:"Alamat pengiriman lengkap", city:"Kota / Kecamatan", postal:"Kode pos", courier:"Pilihan pengiriman", payment:"Preferensi pembayaran", instructions:"Petunjuk pengiriman (opsional)", shippingDisclaimer:"Ongkir dan pembayaran akan dikonfirmasi admin melalui WhatsApp setelah pengecekan stok.", submitOrder:"Kirim permintaan pesanan", add:"Tambah", all:"Semua", search:"Cari produk…", empty:"Keranjang masih kosong.", loading:"Memuat produk…", noProducts:"Belum ada produk yang tersedia. Silakan cek kembali nanti.", unavailable:"Stok habis", success:"Permintaan pesanan berhasil diterima. Nomor pesanan: ", failed:"Pesanan belum dapat dikirim. Silakan coba lagi atau hubungi kami melalui WhatsApp.", stock:"Stok", unit:"Satuan" },
-  ru: { eyebrow:"ХОРОШАЯ ЕДА · КАЖДЫЙ ДЕНЬ", heroTitle:"Простой выбор.<br><em>Хорошее самочувствие.</em>", heroText:"Качественные ингредиенты и продукты Naturalife Bali.", browse:"Открыть каталог ↓", ourSelection:"НАШ ВЫБОР", catalogTitle:"Каталог товаров", yourOrder:"ВАШ ЗАКАЗ", cartTitle:"Корзина", subtotal:"Подытог", shippingNote:"Стоимость доставки рассчитывается и подтверждается администратором.", checkout:"Перейти к оформлению", deliveryDetails:"ДАННЫЕ ДОСТАВКИ", checkoutTitle:"Почти готово", fullName:"Имя получателя", address:"Полный адрес доставки", city:"Город / Район", postal:"Почтовый индекс", courier:"Способ доставки", payment:"Способ оплаты", instructions:"Инструкции по доставке", shippingDisclaimer:"Стоимость доставки и оплата будут подтверждены администратором в WhatsApp после проверки наличия.", submitOrder:"Отправить запрос", add:"Добавить", all:"Все", search:"Поиск товаров…", empty:"Корзина пуста.", loading:"Загрузка товаров…", noProducts:"Сейчас нет доступных товаров.", unavailable:"Нет в наличии", success:"Запрос принят. Номер заказа: ", failed:"Не удалось отправить заказ. Попробуйте ещё раз или свяжитесь с нами в WhatsApp.", stock:"Остаток", unit:"Ед." }
+  en: { eyebrow:"GOOD FOOD · BETTER EVERYDAY", heroTitle:"Simple choices.<br><em>Feel-good living.</em>", heroText:"Discover quality ingredients and thoughtfully selected food products from Naturalife Bali.", browse:"Explore the catalog ↓", ourSelection:"OUR SELECTION", catalogTitle:"Shop the catalog", yourOrder:"YOUR ORDER", cartTitle:"Shopping cart", subtotal:"Subtotal", shippingNote:"Shipping is calculated and confirmed manually by our team.", checkout:"Continue to checkout", deliveryDetails:"DELIVERY DETAILS", checkoutTitle:"Almost there", fullName:"Recipient name", address:"Full delivery address", city:"City / District", postal:"Postal code", courier:"Preferred delivery", payment:"Payment preference", instructions:"Delivery instructions (optional)", shippingDisclaimer:"Your order is recorded after you complete the payment step.", submitOrder:"Continue to payment", add:"Add", all:"All", search:"Search products…", empty:"Your cart is empty.", loading:"Loading products…", noProducts:"No products are currently available. Please check back soon.", unavailable:"Out of stock", success:"Your order request was received. Order number: ", failed:"We could not submit your order. Please try again or contact us on WhatsApp.", stock:"Stock", unit:"Unit" },
+  id: { eyebrow:"MAKAN BAIK · HIDUP LEBIH BAIK", heroTitle:"Pilihan sederhana.<br><em>Hidup lebih sehat.</em>", heroText:"Temukan bahan makanan berkualitas dan produk pilihan dari Naturalife Bali.", browse:"Jelajahi katalog ↓", ourSelection:"PILIHAN KAMI", catalogTitle:"Belanja katalog", yourOrder:"PESANAN ANDA", cartTitle:"Keranjang belanja", subtotal:"Subtotal", shippingNote:"Ongkir dihitung dan dikonfirmasi manual oleh tim kami.", checkout:"Lanjut ke checkout", deliveryDetails:"DETAIL PENGIRIMAN", checkoutTitle:"Hampir selesai", fullName:"Nama penerima", address:"Alamat pengiriman lengkap", city:"Kota / Kecamatan", postal:"Kode pos", courier:"Pilihan pengiriman", payment:"Preferensi pembayaran", instructions:"Petunjuk pengiriman (opsional)", shippingDisclaimer:"Pesanan Anda tercatat setelah langkah pembayaran selesai.", submitOrder:"Lanjut ke pembayaran", add:"Tambah", all:"Semua", search:"Cari produk…", empty:"Keranjang masih kosong.", loading:"Memuat produk…", noProducts:"Belum ada produk yang tersedia. Silakan cek kembali nanti.", unavailable:"Stok habis", success:"Permintaan pesanan berhasil diterima. Nomor pesanan: ", failed:"Pesanan belum dapat dikirim. Silakan coba lagi atau hubungi kami melalui WhatsApp.", stock:"Stok", unit:"Satuan" },
+  ru: { eyebrow:"ХОРОШАЯ ЕДА · КАЖДЫЙ ДЕНЬ", heroTitle:"Простой выбор.<br><em>Хорошее самочувствие.</em>", heroText:"Качественные ингредиенты и продукты Naturalife Bali.", browse:"Открыть каталог ↓", ourSelection:"НАШ ВЫБОР", catalogTitle:"Каталог товаров", yourOrder:"ВАШ ЗАКАЗ", cartTitle:"Корзина", subtotal:"Подытог", shippingNote:"Стоимость доставки рассчитывается и подтверждается администратором.", checkout:"Перейти к оформлению", deliveryDetails:"ДАННЫЕ ДОСТАВКИ", checkoutTitle:"Почти готово", fullName:"Имя получателя", address:"Полный адрес доставки", city:"Город / Район", postal:"Почтовый индекс", courier:"Способ доставки", payment:"Способ оплаты", instructions:"Инструкции по доставке", shippingDisclaimer:"Заказ будет оформлен после шага оплаты.", submitOrder:"Перейти к оплате", add:"Добавить", all:"Все", search:"Поиск товаров…", empty:"Корзина пуста.", loading:"Загрузка товаров…", noProducts:"Сейчас нет доступных товаров.", unavailable:"Нет в наличии", success:"Запрос принят. Номер заказа: ", failed:"Не удалось отправить заказ. Попробуйте ещё раз или свяжитесь с нами в WhatsApp.", stock:"Остаток", unit:"Ед." }
 };
 
 let products = [], cart = {}, category = "All", lang = "en", submitting = false, storeSettings = null;
@@ -248,29 +248,26 @@ $("#checkout-form").onsubmit = async event => {
     items,
     website: String(data.get("website") || "")
   };
-  submitting = true;
-  submit.disabled = true;
-  submit.textContent = lang === "id" ? "Mengirim…" : lang === "ru" ? "Отправка…" : "Submitting…";
   message.textContent = "";
-  try {
-    const response = await fetch(ORDER_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY }, body: JSON.stringify(payload) });
-    const result = await response.json();
-    if (!response.ok || !result.ok) throw new Error(result.error || "Order submission failed");
-    const paidTotal = result.shipping_confirmed ? (lang === "id" ? " Total termasuk ongkir: " : lang === "ru" ? " Итого с доставкой: " : " Total including shipping: ") + money(result.total) + ". " + (lang === "id" ? "Admin akan cek stok lalu mengirim detail pembayaran lewat WhatsApp." : lang === "ru" ? "Администратор проверит наличие и пришлёт реквизиты для оплаты в WhatsApp." : "Admin will check stock, then send payment details on WhatsApp.") : "";
-    if (paidTotal) message.textContent = t("success") + result.order_number + "." + paidTotal; else message.textContent = t("success") + result.order_number + ". " + (lang === "id" ? "Admin akan menghubungi Anda melalui WhatsApp untuk konfirmasi ongkir dan pembayaran." : lang === "ru" ? "Администратор свяжется с вами в WhatsApp для подтверждения доставки и оплаты." : "Admin will contact you on WhatsApp to confirm shipping and payment.");
-    if (window.NLAddress) window.NLAddress.remember();
-    cart = {};
-    form.reset();
-    renderCart();
-  } catch (error) {
-    console.error(error);
-    message.textContent = t("failed");
-  } finally {
-    submitting = false;
-    submit.disabled = false;
-    submit.textContent = t("submitOrder");
-  }
+  if (window.NLPayment) window.NLPayment.start(payload);
+  else message.textContent = t("failed");
 };
+
+/** Sends the order (called by payment.js once the customer presses "Payment has been made"). */
+async function sendOrder(payload) {
+  const response = await fetch(ORDER_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY }, body: JSON.stringify(payload) });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.ok) {
+    const error = new Error(result.error || "Order submission failed");
+    error.paymentReported = !!result.payment_reported;
+    throw error;
+  }
+  if (window.NLAddress) window.NLAddress.remember();
+  cart = {};
+  renderCart();
+  return result;
+}
+window.NLCheckout = { send: sendOrder };
 
 setLang("en");
 loadStorefrontSettings();

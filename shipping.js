@@ -30,7 +30,9 @@
   let requestId = 0, timer = 0;
 
   function eta(s) {
-    const range = String(s.eta_range || "").replace(/\s*-\s*/, "–").trim();
+    let range = String(s.eta_range || "").trim();
+    const ends = range.split(/\s*-\s*/);
+    range = ends.length === 2 && ends[0] === ends[1] ? ends[0] : ends.join("–");
     if (!range) return s.eta || "";
     const unit = String(s.eta_unit || "").toLowerCase();
     const word = unit.startsWith("hour") ? c("hours") : (range === "1" ? c("day") : c("days"));

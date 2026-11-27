@@ -1,0 +1,67 @@
+/* Naturalife Bali — payment screen (checkout) and payment details (checkout + invoice) */
+.pay-panel{display:grid;gap:16px}
+.pay-panel[hidden],.pay-method[hidden],.pay-proof[hidden],.pay-paid-toggle[hidden]{display:none!important}
+.pay-head h2{margin:4px 0 6px}
+.pay-intro{margin:0;font-size:13px;color:var(--muted,#6f7b73);line-height:1.6}
+.pay-card{border:1px solid var(--line,#e4e6dc);border-radius:12px;padding:16px 18px;background:var(--surface,#fff)}
+.pay-card h3{margin:0 0 12px;font:700 12px "DM Sans",Arial,sans-serif;color:var(--muted,#6f7b73)}
+.pay-items{list-style:none;margin:0 0 10px;padding:0 0 10px;border-bottom:1px solid var(--line,#e4e6dc);display:grid;gap:7px}
+.pay-items li,.pay-line{display:flex;justify-content:space-between;gap:14px;font-size:13px}
+.pay-items li span:last-child,.pay-line span:last-child,.pay-line strong{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.pay-line{padding:4px 0;color:var(--ink,#26352e)}
+.pay-total{margin-top:6px;padding-top:12px;border-top:1px solid var(--line,#e4e6dc);font-weight:700}
+.pay-total strong{font-size:18px;color:var(--green,#244b3c)}
+.pay-note{margin:12px 0 0;padding:11px 13px;border-radius:9px;font-size:12px;line-height:1.6}
+.pay-note.warn{background:#fdf3e2;color:#87601f}
+.pay-note.ok{background:#e8f2ea;color:#2f6a45;margin:0}
+
+.pay-tabs{display:flex;gap:3px;padding:3px;background:var(--ivory,#f1f2ec);border-radius:10px;margin-bottom:14px}
+.pay-tab{flex:1;border:0;background:transparent;padding:9px 10px;border-radius:8px;font:600 12.5px "DM Sans",Arial,sans-serif;color:var(--muted,#6f7b73);cursor:pointer}
+.pay-tab[aria-selected="true"]{background:#fff;color:var(--green,#244b3c);box-shadow:0 1px 3px rgba(30,55,40,.14)}
+.pay-tab:focus-visible{outline:2px solid var(--green,#244b3c);outline-offset:1px}
+.pay-method{display:grid;gap:10px}
+.pay-qris{display:block;width:min(260px,100%);height:auto;margin:0 auto;border:1px solid var(--line,#e4e6dc);border-radius:12px;background:#fff;padding:10px}
+.pay-help{margin:0;text-align:center;font-size:12px;color:var(--muted,#6f7b73);line-height:1.6}
+.pay-save{justify-self:center;font-size:12.5px;font-weight:600;color:var(--green,#244b3c)}
+.pay-row{display:grid;grid-template-columns:minmax(96px,auto) 1fr auto;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--line,#e4e6dc);border-radius:10px;background:#fff}
+.pay-row span{font-size:11.5px;color:var(--muted,#6f7b73)}
+.pay-row strong{font-size:14px;color:var(--ink,#26352e);overflow-wrap:anywhere}
+.pay-number{font-size:16px!important;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.pay-amount{background:var(--ivory,#f6f5ef)}
+.pay-amount strong{color:var(--green,#244b3c);font-size:15px}
+.pay-row:not(:has(.pay-copy)){grid-template-columns:minmax(96px,auto) 1fr}
+.pay-copy{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line,#e4e6dc);background:#fff;color:var(--green,#244b3c);border-radius:8px;padding:7px 11px;font:600 12px "DM Sans",Arial,sans-serif;cursor:pointer;white-space:nowrap}
+.pay-copy svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pay-copy:hover{border-color:var(--green,#244b3c)}
+.pay-copy.is-copied{background:var(--green,#244b3c);border-color:var(--green,#244b3c);color:#fff}
+.pay-copy:focus-visible{outline:2px solid var(--green,#244b3c);outline-offset:2px}
+
+.pay-paid{display:grid;gap:10px}
+.pay-paid .primary-button{width:100%}
+.pay-proof{display:grid;gap:8px;padding:14px;border:1px dashed var(--line,#dcdfd3);border-radius:11px}
+.pay-proof-label{display:grid;gap:7px;font-size:12px;font-weight:600;color:var(--ink,#26352e)}
+.pay-proof-input{font-size:12px}
+.pay-proof small{font-size:11px;color:var(--muted,#6f7b73)}
+.pay-msg{margin:0;font-size:12px}
+.pay-msg:empty{display:none}
+.pay-msg.error{color:#a24b3e}
+.pay-actions{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+.pay-invoice{font-weight:700;font-size:13px;color:var(--green,#244b3c)}
+.pay-done{border:1px solid var(--line,#e4e6dc);background:transparent;color:var(--ink,#26352e);border-radius:9px;padding:9px 16px;font:600 13px "DM Sans",Arial,sans-serif;cursor:pointer}
+/* invoice page standalone buttons */
+.pay .primary-button,.pay-paid .primary-button{border:0;background:var(--green,#244b3c);color:#fff;border-radius:9px;padding:12px 16px;font:600 13px "DM Sans",Arial,sans-serif;cursor:pointer}
+.pay .primary-button:disabled{opacity:.6}
+/* PDF snapshot: show both payment methods, hide interactive bits */
+body.pdf-mode .pay-tabs,body.pdf-mode .pay-copy,body.pdf-mode .pay-save,body.pdf-mode .pay-paid{display:none!important}
+body.pdf-mode .pay-method[hidden]{display:grid!important;margin-top:12px}
+@media(max-width:540px){.pay-row{grid-template-columns:1fr auto}.pay-row span{grid-column:1/-1}.pay-row:not(:has(.pay-copy)){grid-template-columns:1fr}}
+/* payment step: confirmation block */
+.pay-confirm{display:grid;gap:8px;padding:16px 18px;border:1px solid var(--line,#e4e6dc);border-radius:12px;background:var(--surface,#fff)}
+.pay-confirm .primary-button{width:100%;margin-top:6px}
+.pay-confirm-note{font-size:11px;color:var(--muted,#6f7b73);text-align:center}
+.pay-note.error{background:#f8e7e3;color:#8f3a2e;display:grid;gap:6px}
+.pay-note.error p{margin:0}
+.pay-wa{justify-self:start;font-weight:700;color:#1f7a4d}
+.pay-back{border:0;background:none;padding:6px 0;font:600 13px "DM Sans",Arial,sans-serif;color:var(--muted,#6f7b73);cursor:pointer}
+.pay-back:disabled,.pay-confirm .primary-button:disabled{opacity:.6;cursor:progress}
+.pay-confirm>small:not(.pay-confirm-note){font-size:11px;color:var(--muted,#6f7b73);line-height:1.5}

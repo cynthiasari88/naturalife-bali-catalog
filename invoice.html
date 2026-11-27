@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Invoice · Naturalife Bali</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="payment.css?v=2">
+<style>
+  :root{--green:#244b3c;--green-mid:#426b55;--ink:#26352e;--muted:#6f7b73;--line:#e4e6dc;--paper:#fffefa;--ivory:#f4f3ec;--warn-bg:#fdf3e2;--warn:#87601f;--ok-bg:#e8f2ea;--ok:#2f6a45}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ivory);color:var(--ink);font:14px/1.55 "DM Sans",Arial,sans-serif;padding:max(20px,env(safe-area-inset-top)) 16px max(40px,env(safe-area-inset-bottom))}
+  .wrap{max-width:760px;margin:0 auto}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .toolbar a{color:var(--green);font-weight:600;text-decoration:none;font-size:13px}
+  .toolbar .btns{display:flex;gap:8px}
+  .tbtn{border:1px solid var(--line);background:#fff;color:var(--green);font:600 13px "DM Sans",Arial,sans-serif;padding:9px 14px;border-radius:9px;cursor:pointer}
+  .tbtn.primary{background:var(--green);border-color:var(--green);color:#fff}
+  .tbtn:disabled{opacity:.6;cursor:progress}
+  .sheet{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:34px 36px;box-shadow:0 10px 30px rgba(36,75,60,.06)}
+  .top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  .brand img{height:46px;width:auto;display:block}
+  .brand p{margin:8px 0 0;font-size:12px;color:var(--muted);line-height:1.6}
+  .title{text-align:right}
+  .title h1{margin:0;font:600 30px "Playfair Display",Georgia,serif;color:var(--green);letter-spacing:.5px}
+  .title p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+  .badge{display:inline-block;margin-top:10px;padding:5px 12px;border-radius:30px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+  .badge.unpaid{background:var(--warn-bg);color:var(--warn)}
+  .badge.pending{background:#e9eef7;color:#2f4f86}
+  .badge.paid{background:var(--ok-bg);color:var(--ok)}
+  .badge.failed,.badge.refunded{background:#f6e4e1;color:#9a3f33}
+  .parties{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:22px 0;border-bottom:1px solid var(--line)}
+  .parties h2,.pay h2{margin:0 0 6px;font-size:11.5px;font-weight:700;color:var(--muted)}
+  .parties p{margin:0;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+  .parties strong{font-size:14px}
+  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:13px}
+  th{text-align:left;font-size:11.5px;font-weight:700;color:var(--muted);padding:0 0 10px;border-bottom:1px solid var(--line)}
+  td{padding:12px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  th.n,td.n{text-align:right;white-space:nowrap;padding-left:14px;font-variant-numeric:tabular-nums}
+  .totals{margin-left:auto;width:min(340px,100%);margin-top:14px;font-size:13.5px}
+  .totals div{display:flex;justify-content:space-between;gap:16px;padding:6px 0}
+  .totals span:last-child{font-variant-numeric:tabular-nums;text-align:right}
+  .totals .grand{border-top:1px solid var(--line);margin-top:6px;padding-top:12px;font-size:17px;font-weight:700;color:var(--green)}
+  .notes{margin-top:18px;padding:12px 14px;border-radius:9px;background:var(--ivory);font-size:12.5px;color:var(--muted);white-space:pre-line}
+  .pay{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
+  .foot{margin-top:26px;font-size:11.5px;color:var(--muted);text-align:center}
+  .state{max-width:520px;margin:12vh auto;text-align:center;color:var(--muted)}
+  .state h1{font:600 24px "Playfair Display",Georgia,serif;color:var(--green)}
+  @media(max-width:600px){
+    .sheet{padding:22px 18px;border-radius:12px}
+    .top{flex-direction:column}
+    .title{text-align:left}
+    .parties{grid-template-columns:1fr}
+    .toolbar .btns{width:100%}
+    .toolbar .tbtn{flex:1}
+  }
+  @media print{
+    body{background:#fff;padding:0}
+    .toolbar,.pay-paid,.pay-save,.pay-copy,.pay-tabs{display:none!important}
+    .sheet{border:0;box-shadow:none;padding:0}
+    .pay-method[hidden]{display:block!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toolbar" id="toolbar" hidden>
+    <a href="/">← Naturalife Bali</a>
+    <div class="btns">
+      <button type="button" class="tbtn" id="print-btn">Print</button>
+      <button type="button" class="tbtn primary" id="pdf-btn">Download PDF</button>
+    </div>
+  </div>
+  <main id="invoice"><div class="state"><p id="loading-text">Loading invoice…</p></div></main>
+</div>
+<script src="payment-core.js?v=2"></script>
+<script src="invoice.js?v=1"></script>
+</body>
+</html>
