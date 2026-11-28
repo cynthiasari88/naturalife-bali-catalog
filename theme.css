@@ -164,3 +164,13 @@ html[data-nl-theme][data-hero-style="slides"] .hero{position:relative;isolation:
 
 /* Hero without text: hidden visually, still readable by search engines and screen readers */
 html[data-nl-theme][data-hide~="herotext"] .hero .hero-copy{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* Slideshow "Show whole image": the hero follows the image's own proportions, nothing is cropped */
+html[data-nl-theme][data-hero-style="slides"][data-slide-fit="contain"] .hero{width:100%;aspect-ratio:16/9;min-height:0!important;max-height:88svh;align-content:end}
+html[data-nl-theme][data-hero-style="slides"][data-slide-fit="contain"][data-hide~="herotext"] .hero{padding:0!important}
+html[data-nl-theme][data-slide-fit="contain"] .hero-slide img{position:relative;z-index:1;object-fit:contain;object-position:50% 50%}
+.hero-slide-bg{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(28px) brightness(.9);transform:scale(1.08)}
+@media(max-width:760px){
+  html[data-nl-theme][data-hero-style="slides"][data-slide-fit="contain"] .hero{min-height:0!important}
+  html[data-nl-theme][data-slide-fit="contain"] .hero-slide-track::after{background:var(--hero-overlay,rgba(0,0,0,.45))}
+}

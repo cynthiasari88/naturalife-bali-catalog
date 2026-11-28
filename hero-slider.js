@@ -12,11 +12,15 @@
   const lang = () => { const v = (document.getElementById("language") || {}).value; return LABELS[v] ? v : "en"; };
   const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+  let fit = "cover";
   function pictureHtml(s, i) {
     const lazy = i > 1; // first two load right away; the rest just before they appear
     const a = lazy ? "data-" : "";
-    return '<picture class="hero-slide' + (s.sm ? " has-sm" : "") + (i === 0 ? " is-active" : "") + '" data-i="' + i + '" style="--fp:' + s.fx + "% " + s.fy + '%">' +
-      (s.sm ? '<source media="(max-width: 760px)" ' + a + 'srcset="' + esc(s.sm) + '">' : "") +
+    // "cover": phones get the 9:16 crop. "contain" (whole image): phones get the optional phone design, else the tablet size.
+    const phone = fit === "contain" ? (s.ph || s.md) : s.sm;
+    return '<picture class="hero-slide' + (fit === "cover" && s.sm ? " has-sm" : "") + (i === 0 ? " is-active" : "") + '" data-i="' + i + '" style="--fp:' + s.fx + "% " + s.fy + '%">' +
+      (fit === "contain" ? '<span class="hero-slide-bg" aria-hidden="true"></span>' : "") +
+      (phone ? '<source media="(max-width: 760px)" ' + a + 'srcset="' + esc(phone) + '">' : "") +
       (s.md ? '<source media="(max-width: 1280px)" ' + a + 'srcset="' + esc(s.md) + '">' : "") +
       "<img " + a + 'src="' + esc(s.lg) + '" alt="" decoding="async"' + (i === 0 ? ' fetchpriority="high"' : "") + "></picture>";
   }
@@ -42,22 +46,36 @@
     if (slides.length > 1 && !reduceMotion && !paused) timer = setInterval(() => show(index + 1), interval);
   }
 
+  /** Whole-image mode: full width, height from the tallest photo currently in use (phone designs included), max 88% of the screen. */
+  function sizeHero() {
+    if (!root || fit !== "contain") return;
+    let ratio = 0;
+    root.querySelectorAll(".hero-slide img").forEach(img => {
+      if (img.naturalWidth && img.naturalHeight) ratio = Math.max(ratio, img.naturalHeight / img.naturalWidth);
+    });
+    if (!ratio) ratio = 9 / 16;
+    hero.style.height = Math.round(Math.min(hero.clientWidth * ratio, window.innerHeight * 0.88)) + "px";
+  }
+  window.addEventListener("resize", () => sizeHero());
+
   function teardown() {
     clearInterval(timer);
     if (root) root.remove();
     root = null; slides = []; index = 0;
     hero.classList.remove("has-slides");
+    hero.style.removeProperty("height");
   }
 
   function build(theme) {
     const T = window.NaturalifeTheme;
     const list = theme && theme.hero_style === "slides" && T && T.activeSlides ? T.activeSlides(theme) : [];
-    const sig = JSON.stringify([list, theme && theme.hero_slide_interval]);
+    const sig = JSON.stringify([list, theme && theme.hero_slide_interval, theme && theme.hero_slide_fit]);
     if (sig === signature) return; // only rebuild when the slides themselves change (not on every colour tweak)
     signature = sig;
     teardown();
     if (!list.length) return;
     slides = list;
+    fit = theme.hero_slide_fit === "contain" ? "contain" : "cover";
     interval = (Number(theme.hero_slide_interval) || 6) * 1000;
     const L = LABELS[lang()];
     root = document.createElement("div");
@@ -70,6 +88,16 @@
         '<div class="hero-dots">' + list.map((_, i) => '<button type="button" class="hero-dot" aria-label="' + esc(L[2].replace("{n}", i + 1).replace("{t}", list.length)) + '" aria-current="' + (i === 0) + '"></button>').join("") + "</div>" : "");
     hero.prepend(root);
     hero.classList.add("has-slides");
+    // Whole-image mode: the hero takes the shape of the first slide (no cropping), and each photo gets a soft blurred backdrop.
+    root.querySelectorAll(".hero-slide img").forEach((img, i) => {
+      const onLoad = () => {
+        const bg = img.parentNode.querySelector(".hero-slide-bg");
+        if (bg && img.currentSrc) bg.style.backgroundImage = 'url("' + img.currentSrc.replace(/"/g, "%22") + '")';
+        sizeHero();
+      };
+      img.addEventListener("load", onLoad);
+      if (img.complete && img.naturalWidth) onLoad();
+    });
     root.addEventListener("click", e => {
       if (e.target.closest(".hero-arrow.prev")) show(index - 1, true);
       else if (e.target.closest(".hero-arrow.next")) show(index + 1, true);
