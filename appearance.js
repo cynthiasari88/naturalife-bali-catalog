@@ -58,7 +58,7 @@
       { key: "show_hero", type: "toggle", label: "Show hero section", hint: "Hidden automatically when a published Visual Builder homepage is live." },
       { key: "hero_style", type: "seg", label: "Background", show: t => t.show_hero, options: opts(["gradient", "Soft gradient"], ["solid", "Solid color"], ["image", "Photo"]) },
       { key: "hero_bg", type: "color", label: "Hero background color", show: t => t.show_hero && t.hero_style === "solid" },
-      { key: "hero_image", type: "image", label: "Hero photo", hint: "Landscape JPG or WebP, at least 1800 px wide, up to 5 MB.", show: t => t.show_hero && t.hero_style === "image" },
+      { key: "hero_image", type: "image", label: "Hero photo", hint: "Landscape JPG, PNG or WebP, ideally 2400 px wide (max 20 MB). Sizes for desktop, tablet and phone are created automatically.", show: t => t.show_hero && t.hero_style === "image" },
       { key: "hero_overlay", type: "range", label: "Photo darkening", hint: "Keeps the headline readable on busy photos.", min: 0, max: 85, unit: "%", show: t => t.show_hero && t.hero_style === "image" },
       { key: "hero_art", type: "toggle", label: "Show decorative card illustration", show: t => t.show_hero }
     ] },
@@ -103,7 +103,9 @@
     }
     if (f.type === "image") {
       return '<div class="ap-field ap-image" data-field="' + f.key + '"><span class="ap-label">' + esc(f.label) + "</span>" +
-        '<div class="ap-image-box"><img id="' + id + '-img" alt="Hero photo preview"' + (v ? ' src="' + esc(v) + '"' : " hidden") + '><p id="' + id + '-empty"' + (v ? " hidden" : "") + ">No photo selected yet.</p></div>" +
+        '<div class="ap-image-box ap-focus" id="' + id + '-box" title="Click the most important part of the photo"><img id="' + id + '-img" alt="Hero photo preview"' + (v ? ' src="' + esc(v) + '"' : " hidden") + '><span class="ap-focus-dot" id="' + id + '-dot"' + (v ? "" : " hidden") + '></span><p id="' + id + '-empty"' + (v ? " hidden" : "") + ">No photo selected yet.</p></div>" +
+        '<small class="ap-hint ap-focus-hint"' + (v ? "" : " hidden") + ' id="' + id + '-focus-hint">Click the photo to choose its focus point — this part stays visible on phones and wide screens.</small>' +
+        '<small class="ap-hint ap-variants" id="' + id + '-variants"></small>' +
         '<div class="ap-image-actions"><label class="btn light ap-upload">Upload photo<input type="file" id="' + id + '-file" accept="image/jpeg,image/png,image/webp" hidden></label>' +
         '<button type="button" class="btn light" id="' + id + '-remove"' + (v ? "" : " hidden") + ">Remove</button></div>" +
         '<label class="ap-sublabel" for="' + id + '-url">Or paste an image link</label><input type="url" id="' + id + '-url" data-key="' + f.key + '" value="' + esc(v) + '" placeholder="https://…">' +
@@ -185,12 +187,14 @@
   }
 
   function isDirty() { return !!(saved && state && !same(saved, state)); }
+  /** A hero photo published before automatic sizing existed has no tablet/phone versions yet. */
+  function needsHeroSizes() { return !!(state && state.hero_style === "image" && state.hero_image && (!state.hero_image_md || !state.hero_image_sm)); }
   function refreshStatus(text, tone) {
     const el = $("#ap-status"); if (!el) return;
-    const dirty = isDirty();
-    el.className = "ap-status " + (tone || (dirty ? "dirty" : "clean"));
-    el.textContent = text || (dirty ? "Unsaved changes — visible in the preview only" : "All changes are live on your storefront");
-    $("#ap-save").disabled = !dirty || !state;
+    const dirty = isDirty(), sizes = needsHeroSizes();
+    el.className = "ap-status " + (tone || (dirty || sizes ? "dirty" : "clean"));
+    el.textContent = text || (dirty ? "Unsaved changes — visible in the preview only" : sizes ? "Your hero photo has no phone/tablet sizes yet — click Publish to create them" : "All changes are live on your storefront");
+    $("#ap-save").disabled = !(dirty || sizes) || !state;
     $("#ap-discard").disabled = !dirty || !state;
   }
 
@@ -214,8 +218,12 @@
   function showImage(url) {
     const img = $("#ap-hero_image-img"), empty = $("#ap-hero_image-empty"), rm = $("#ap-hero_image-remove");
     if (!img) return;
+    const dot = $("#ap-hero_image-dot"), fh = $("#ap-hero_image-focus-hint"), vs = $("#ap-hero_image-variants");
     if (url) { img.src = url; img.hidden = false; empty.hidden = true; rm.hidden = false; }
     else { img.removeAttribute("src"); img.hidden = true; empty.hidden = false; rm.hidden = true; }
+    if (dot) { dot.hidden = !url; dot.style.left = state.hero_focus_x + "%"; dot.style.top = state.hero_focus_y + "%"; }
+    if (fh) fh.hidden = !url;
+    if (vs) vs.textContent = !url ? "" : state.hero_image_md && state.hero_image_sm ? "✓ Optimized for desktop, tablet and phone." : "Sizes for tablet and phone will be created when you publish.";
   }
 
   /* ---------- events ---------- */
@@ -232,7 +240,7 @@
     if (f.type === "toggle") setValue(key, el.checked);
     else if (f.type === "range") { setValue(key, Number(el.value)); $("#ap-" + key + "-out").textContent = el.value + f.unit; }
     else if (f.type === "seg") { if (!el.checked) return; setValue(key, el.value); }
-    else if (f.type === "image") { const v = el.value.trim(); if (v && !/^https:\/\//i.test(v)) return; setValue(key, v); showImage(T.normalize(state).hero_image); }
+    else if (f.type === "image") { const v = el.value.trim(); if (v && !/^https:\/\//i.test(v)) return; if (v !== state.hero_image) { heroSource = null; state.hero_image_md = ""; state.hero_image_sm = ""; } setValue(key, v); showImage(T.normalize(state).hero_image); }
     else if (f.type === "color") { setValue(key, el.value.toLowerCase()); const hx = $("#ap-" + key + "-hex"); if (hx) { hx.value = el.value.toLowerCase(); hx.removeAttribute("aria-invalid"); } }
     else setValue(key, el.value);
     refresh();
@@ -250,20 +258,57 @@
     syncInputs(); refresh();
   }
 
-  async function uploadHero(file) {
-    const status = $("#ap-hero_image-status");
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) throw new Error("Please choose a JPG, PNG or WebP photo.");
-    if (file.size > 5 * 1024 * 1024) throw new Error("The photo is larger than 5 MB. Export it smaller and try again.");
-    status.textContent = "Uploading photo…";
-    const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
-    const path = "theme/hero-" + Date.now() + "." + ext;
+  /* ---------- hero photo: one upload → desktop, tablet and phone sizes ---------- */
+  let heroSource = null; // original photo (File/Blob) kept in memory so the phone crop can be re-made
+  const VARIANTS = { lg: { width: 2400 }, md: { width: 1600 }, sm: { width: 1080, height: 1920 } };
+
+  function loadImage(blob) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob), img = new Image();
+      img.onload = () => resolve({ img, done: () => URL.revokeObjectURL(url) });
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("This photo could not be read. Try a JPG or PNG.")); };
+      img.src = url;
+    });
+  }
+  function toJpeg(canvas) {
+    return new Promise((resolve, reject) => canvas.toBlob(b => (b ? resolve(b) : reject(new Error("Could not create the image."))), "image/jpeg", 0.82));
+  }
+  /** Landscape sizes keep the whole photo; the phone size is a 9:16 portrait crop around the focus point. */
+  async function renderVariant(img, kind, fx, fy) {
+    const W = img.naturalWidth, H = img.naturalHeight, v = VARIANTS[kind];
+    let sx = 0, sy = 0, sw = W, sh = H, ow, oh;
+    if (kind === "sm") {
+      const ratio = v.width / v.height;
+      if (W / H > ratio) { sw = Math.round(H * ratio); sx = Math.round(Math.min(W - sw, Math.max(0, fx / 100 * W - sw / 2))); }
+      else { sh = Math.round(W / ratio); sy = Math.round(Math.min(H - sh, Math.max(0, fy / 100 * H - sh / 2))); }
+      ow = Math.min(v.width, sw); oh = Math.round(ow / ratio);
+    } else { ow = Math.min(v.width, W); oh = Math.round(H * ow / W); }
+    const canvas = document.createElement("canvas");
+    canvas.width = ow; canvas.height = oh;
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, ow, oh);
+    return toJpeg(canvas);
+  }
+  async function uploadBlob(blob, path) {
     let lastError = null;
     for (const bucket of MEDIA_BUCKETS) {
-      const { data, error } = await db.storage.from(bucket).upload(path, file, { upsert: false, contentType: file.type, cacheControl: "31536000" });
+      const { data, error } = await db.storage.from(bucket).upload(path, blob, { upsert: false, contentType: "image/jpeg", cacheControl: "31536000" });
       if (!error && data?.path) return db.storage.from(bucket).getPublicUrl(data.path).data.publicUrl;
       lastError = error;
     }
     throw new Error("Upload failed: " + (lastError?.message || "storage did not accept the file."));
+  }
+  async function makeAndUploadVariants(source, kinds) {
+    const { img, done } = await loadImage(source);
+    try {
+      const stamp = Date.now(), out = {};
+      for (const kind of kinds) {
+        const blob = await renderVariant(img, kind, state.hero_focus_x, state.hero_focus_y);
+        out[kind] = await uploadBlob(blob, "theme/hero-" + stamp + "-" + kind + ".jpg");
+      }
+      return out;
+    } finally { done(); }
   }
 
   /* ---------- preview ---------- */
@@ -331,6 +376,21 @@
     btn.disabled = true;
     refreshStatus("Publishing…", "busy");
     try {
+      if (state.hero_style === "image" && state.hero_image && (!state.hero_image_md || !state.hero_image_sm)) {
+        refreshStatus("Optimizing the hero photo for phones and tablets…", "busy");
+        try {
+          const need = [!state.hero_image_md && "md", !state.hero_image_sm && "sm"].filter(Boolean);
+          const source = heroSource || await fetch(state.hero_image, { mode: "cors" }).then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); });
+          heroSource = source;
+          const urls = await makeAndUploadVariants(source, need);
+          if (urls.md) state.hero_image_md = urls.md;
+          if (urls.sm) state.hero_image_sm = urls.sm;
+        } catch (err) {
+          console.warn("Hero photo optimisation skipped:", err);
+          say("#appearance-message", "The hero photo could not be resized automatically (" + (err.message || err) + "). It is still published; upload it again to create phone sizes.");
+        }
+        refreshStatus("Publishing…", "busy");
+      }
       const theme = T.normalize(state), now = new Date().toISOString();
       const { error } = await withTimeout(db.from("store_homepage_pages").upsert(
         { slug: SLUG, title: "Site theme", status: "published", page_schema: { version: 1, blocks: [], theme }, updated_at: now, published_at: now },
@@ -361,15 +421,30 @@
     form.addEventListener("submit", e => e.preventDefault());
     form.addEventListener("click", e => {
       const p = e.target.closest("[data-preset]"); if (p) applyPreset(p.dataset.preset);
-      if (e.target.id === "ap-hero_image-remove") { setValue("hero_image", ""); syncInputs(); refresh(); }
+      if (e.target.id === "ap-hero_image-remove") { heroSource = null; ["hero_image", "hero_image_md", "hero_image_sm"].forEach(k => setValue(k, "")); syncInputs(); refresh(); }
+      const box = e.target.closest("#ap-hero_image-box");
+      if (box && state.hero_image) {
+        const r = box.getBoundingClientRect();
+        setValue("hero_focus_x", Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 100));
+        setValue("hero_focus_y", Math.round(Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)) * 100));
+        setValue("hero_image_sm", ""); // the phone crop is re-made around the new focus point when publishing
+        showImage(state.hero_image); refresh();
+      }
     });
     form.addEventListener("change", async e => {
       if (e.target.id !== "ap-hero_image-file" || !e.target.files[0]) return;
       const status = $("#ap-hero_image-status");
       try {
-        const url = await uploadHero(e.target.files[0]);
-        setValue("hero_image", url); syncInputs(); refresh();
-        status.textContent = "Photo uploaded. Publish to make it live.";
+        const file = e.target.files[0];
+        if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("Please choose a JPG, PNG or WebP photo.");
+        if (file.size > 20 * 1024 * 1024) throw new Error("The photo is larger than 20 MB. Export it smaller and try again.");
+        heroSource = file;
+        state.hero_focus_x = 50; state.hero_focus_y = 50;
+        status.textContent = "Creating sizes for desktop, tablet and phone…";
+        const urls = await makeAndUploadVariants(file, ["lg", "md", "sm"]);
+        setValue("hero_image", urls.lg); setValue("hero_image_md", urls.md); setValue("hero_image_sm", urls.sm);
+        syncInputs(); refresh();
+        status.textContent = "Photo ready for every screen size. Publish to make it live.";
       } catch (err) { status.textContent = err.message; }
       e.target.value = "";
     });
@@ -378,7 +453,7 @@
     $("#ap-reset").onclick = () => {
       if (!state) return;
       if (!confirm("Reset every appearance setting to the original Naturalife look? Nothing changes on your live site until you publish.")) return;
-      state = T.normalize({ ...T.DEFAULTS, hero_image: state.hero_image, custom_css: state.custom_css });
+      state = T.normalize({ ...T.DEFAULTS, hero_image: state.hero_image, hero_image_md: state.hero_image_md, hero_image_sm: state.hero_image_sm, hero_focus_x: state.hero_focus_x, hero_focus_y: state.hero_focus_y, custom_css: state.custom_css });
       syncInputs(); refresh();
     };
     $("#ap-devices").addEventListener("change", e => { device = e.target.value; layoutPreview(); });

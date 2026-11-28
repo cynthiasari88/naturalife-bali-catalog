@@ -40,7 +40,12 @@ html[data-nl-theme][data-buttons="square"] .qty-control button{border-radius:3px
 /* ---------- hero ---------- */
 html[data-nl-theme] .hero{background:radial-gradient(circle at 78% 48%,var(--hero-glow) 0,transparent 30%),linear-gradient(115deg,var(--hero-1),var(--hero-2))}
 html[data-nl-theme][data-hero-style="solid"] .hero{background:var(--hero-bg)}
-html[data-nl-theme][data-hero-style="image"] .hero{background:linear-gradient(var(--hero-overlay),var(--hero-overlay)),var(--hero-image) center/cover no-repeat,var(--green-dark)}
+/* Hero photo: a size made for each screen (desktop 2400 px, tablet/laptop 1600 px, phone 1080×1920 portrait crop) */
+html[data-nl-theme][data-hero-style="image"] .hero{background:linear-gradient(var(--hero-overlay),var(--hero-overlay)),var(--hero-image) var(--hero-pos,50% 50%)/cover no-repeat,var(--green-dark)}
+@media(max-width:1280px){html[data-nl-theme][data-hero-style="image"] .hero{background:linear-gradient(var(--hero-overlay),var(--hero-overlay)),var(--hero-image-md) var(--hero-pos,50% 50%)/cover no-repeat,var(--green-dark)}}
+@media(max-width:760px){
+  html[data-nl-theme][data-hero-style="image"] .hero{background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.28)),linear-gradient(var(--hero-overlay),var(--hero-overlay)),var(--hero-image-sm) var(--hero-pos-sm,50% 50%)/cover no-repeat,var(--green-dark);min-height:clamp(440px,72svh,640px);align-content:end;padding-top:56px;padding-bottom:44px}
+}
 html[data-nl-theme] .hero h1{color:var(--hero-title)}
 html[data-nl-theme] .hero h1 em{color:var(--hero-accent)}
 html[data-nl-theme] .hero .eyebrow{color:var(--hero-eyebrow)}

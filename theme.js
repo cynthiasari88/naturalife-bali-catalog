@@ -46,7 +46,7 @@
     corners: "soft", button_shape: "pill", card_style: "bordered", container: "standard", spacing: "comfortable", sticky_header: true,
     columns_desktop: "4", columns_mobile: "2", image_ratio: "fixed", image_fit: "cover", add_button: "soft",
     show_filters: true, show_search: true, show_descriptions: true, hover_effects: true,
-    show_hero: true, hero_style: "gradient", hero_bg: "#e9eee3", hero_image: "", hero_overlay: 45, hero_art: true,
+    show_hero: true, hero_style: "gradient", hero_bg: "#e9eee3", hero_image: "", hero_image_md: "", hero_image_sm: "", hero_focus_x: 50, hero_focus_y: 50, hero_overlay: 45, hero_art: true,
     show_announcement: true, show_slideshow: true, show_education: true, show_faq: true,
     custom_css: ""
   };
@@ -95,12 +95,15 @@
       else if (k === "hero_overlay") t[k] = Number.isFinite(Number(v)) && v !== "" && v !== null ? Math.max(0, Math.min(85, Math.round(Number(v)))) : d;
       else if (k === "heading_font") t[k] = FONTS.heading[v] ? v : d;
       else if (k === "body_font") t[k] = FONTS.body[v] ? v : d;
-      else if (k === "hero_image") t[k] = /^https:\/\/[^\s"'()<>\\]+$/i.test(String(v || "")) ? String(v) : "";
+      else if (k === "hero_focus_x" || k === "hero_focus_y") t[k] = Number.isFinite(Number(v)) && v !== "" && v !== null ? Math.max(0, Math.min(100, Math.round(Number(v)))) : d;
+      else if (k.indexOf("hero_image") === 0) t[k] = /^https:\/\/[^\s"'()<>\\]+$/i.test(String(v || "")) ? String(v) : "";
       else if (k === "custom_css") t[k] = typeof v === "string" ? v.slice(0, 20000) : "";
       else t[k] = typeof v === "string" && v ? v.slice(0, 40) : d;
     });
     return t;
   }
+
+  function cssUrl(u) { return u ? 'url("' + String(u).replace(/"/g, "%22") + '")' : "none"; }
 
   function derive(t) {
     var p = t.primary, bg = t.background, s = t.surface, tx = t.text;
@@ -126,7 +129,11 @@
       "--hero-eyebrow": heroDark ? "rgba(255,255,255,.8)" : mix(p, "#ffffff", 0.16),
       "--hero-accent": heroDark ? mix(t.accent, "#ffffff", 0.4) : t.accent,
       "--hero-overlay": rgba(mix(p, "#000000", 0.6), (t.hero_overlay / 100).toFixed(2)),
-      "--hero-image": t.hero_image ? 'url("' + t.hero_image.replace(/"/g, "%22") + '")' : "none",
+      "--hero-image": cssUrl(t.hero_image),
+      "--hero-image-md": cssUrl(t.hero_image_md || t.hero_image),
+      "--hero-image-sm": cssUrl(t.hero_image_sm || t.hero_image_md || t.hero_image),
+      "--hero-pos": t.hero_focus_x + "% " + t.hero_focus_y + "%",
+      "--hero-pos-sm": t.hero_image_sm ? "50% 50%" : t.hero_focus_x + "% " + t.hero_focus_y + "%",
       "--serif": '"' + t.heading_font + '",' + hf.fallback, "--sans": '"' + t.body_font + '",Arial,sans-serif',
       "--heading-weight": String(hf.weight),
       "--radius": radius[0] + "px", "--radius-input": radius[1] + "px", "--radius-lg": radius[2] + "px",

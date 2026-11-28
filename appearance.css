@@ -130,3 +130,13 @@ input[type=range]{width:100%;accent-color:var(--green)}
 .ap-load-error{background:var(--paper);border:1px solid #ecd3cc;border-radius:12px;padding:18px 20px;display:grid;gap:8px;justify-items:start}
 .ap-load-error strong{color:#a24b3e;font-size:13px}
 .ap-load-error p{margin:0;font-size:12px;color:#6b5a55;line-height:1.6}
+
+/* hero focus point picker */
+.ap-focus{position:relative;cursor:crosshair}
+.ap-focus-dot{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;border:3px solid #fff;background:rgba(36,75,60,.55);box-shadow:0 0 0 2px rgba(36,75,60,.8),0 2px 8px rgba(0,0,0,.35);pointer-events:none;transition:left .15s,top .15s}
+.ap-focus-dot[hidden]{display:none}
+.ap-variants:empty{display:none}
+.ap-image-box.ap-focus{height:auto;min-height:130px;display:block}
+.ap-image-box.ap-focus img{display:block;width:100%;height:auto;object-fit:initial}
+.ap-image-box.ap-focus p:not([hidden]){display:grid;place-items:center;min-height:130px;margin:0}
+.ap-image-box.ap-focus p[hidden],.ap-image-box.ap-focus img[hidden]{display:none}

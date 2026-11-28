@@ -125,3 +125,24 @@ h1 em{color:#829478;font-weight:600}
 .brand .brand-logo-image{display:block!important;height:auto;max-width:190px;max-height:58px}
 @media(max-width:540px){.brand .brand-logo-image{max-width:125px;max-height:40px}}
 .cart-panel.open ~ .whatsapp-care{display:none}
+
+/* ===== Phone layout fixes (header in two tidy rows, hero spacing) ===== */
+@media(max-width:760px){
+  html body .site-header{height:auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand actions" "nav nav";align-items:center;column-gap:12px;row-gap:0;padding:10px 16px 0;flex-wrap:nowrap}
+  html body .site-header .brand{grid-area:brand;min-width:0}
+  html body .site-header .header-actions{grid-area:actions;gap:8px;margin:0}
+  html body .site-header .store-nav{grid-area:nav;display:flex;justify-content:center;gap:clamp(24px,9vw,44px);margin:9px -16px 0;padding:10px 16px 11px;border-top:1px solid var(--line)}
+  html body .site-header .store-nav a{font-size:13px;padding:2px 0}
+  html body .site-header .language-label{display:none}
+  html body .site-header select{padding:8px 26px 8px 10px;min-height:38px;font-size:12px}
+  html body .site-header .cart-button{min-height:38px;padding:8px 13px;font-size:12px}
+  html body .brand-fixed-logo,html body .brand .brand-logo-image{max-height:42px;width:auto;max-width:130px}
+  html body .brand-text{display:none}
+  html body .hero h1{font-size:clamp(34px,10vw,46px);line-height:1.08}
+  html body .hero-description{font-size:14.5px;line-height:1.7}
+}
+@media(max-width:360px){
+  html body .site-header{padding:8px 12px 0}
+  html body .site-header .store-nav{margin:8px -12px 0;gap:22px}
+  html body .site-header .cart-button{padding:8px 10px}
+}
