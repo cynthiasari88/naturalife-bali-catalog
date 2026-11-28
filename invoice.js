@@ -10,9 +10,9 @@
   document.documentElement.lang = L;
 
   const TXT = {
-    en: { invoice: "Invoice", date: "Date", from: "From", billTo: "Bill to", shipVia: "Shipping", product: "Product", qty: "Qty", price: "Price", amount: "Amount", subtotal: "Subtotal", shipping: "Shipping", total: "Total", totalSoFar: "Total so far", feePending: "to be confirmed", notes: "Notes", payHow: "How to pay", status: { unpaid: "Unpaid", pending: "Payment being verified", paid: "Paid", failed: "Payment failed", refunded: "Refunded" }, loading: "Loading invoice…", notFound: "Invoice not found", notFoundText: "This invoice link is not valid. Please use the link from your order confirmation, or message us on WhatsApp.", error: "The invoice could not be loaded. Please check your connection and try again.", print: "Print", pdf: "Download PDF", making: "Preparing PDF…", thanks: "Thank you for shopping with Naturalife Bali.", back: "← Naturalife Bali" },
-    id: { invoice: "Invoice", date: "Tanggal", from: "Dari", billTo: "Ditagihkan kepada", shipVia: "Pengiriman", product: "Produk", qty: "Jml", price: "Harga", amount: "Total", subtotal: "Subtotal", shipping: "Ongkos kirim", total: "Total", totalSoFar: "Total sementara", feePending: "menunggu konfirmasi", notes: "Catatan", payHow: "Cara pembayaran", status: { unpaid: "Belum dibayar", pending: "Pembayaran sedang diverifikasi", paid: "Lunas", failed: "Pembayaran gagal", refunded: "Dikembalikan" }, loading: "Memuat invoice…", notFound: "Invoice tidak ditemukan", notFoundText: "Link invoice ini tidak valid. Gunakan link dari konfirmasi pesanan Anda, atau hubungi kami lewat WhatsApp.", error: "Invoice gagal dimuat. Periksa koneksi internet lalu coba lagi.", print: "Cetak", pdf: "Unduh PDF", making: "Menyiapkan PDF…", thanks: "Terima kasih telah berbelanja di Naturalife Bali.", back: "← Naturalife Bali" },
-    ru: { invoice: "Счёт", date: "Дата", from: "Продавец", billTo: "Покупатель", shipVia: "Доставка", product: "Товар", qty: "Кол-во", price: "Цена", amount: "Сумма", subtotal: "Сумма товаров", shipping: "Доставка", total: "Итого", totalSoFar: "Предварительно", feePending: "уточняется", notes: "Примечание", payHow: "Как оплатить", status: { unpaid: "Не оплачен", pending: "Оплата проверяется", paid: "Оплачен", failed: "Ошибка оплаты", refunded: "Возврат" }, loading: "Загрузка счёта…", notFound: "Счёт не найден", notFoundText: "Ссылка недействительна. Используйте ссылку из подтверждения заказа или напишите нам в WhatsApp.", error: "Не удалось загрузить счёт. Проверьте подключение и попробуйте снова.", print: "Печать", pdf: "Скачать PDF", making: "Подготовка PDF…", thanks: "Спасибо за покупку в Naturalife Bali.", back: "← Naturalife Bali" }
+    en: { thanksTitle: "Thank you, {name}!", thanksText: "Your support means a lot to our small team in Bali. We hope you enjoy every bite — we can’t wait to prepare your next order.", contact: "naturalifebali.com · WhatsApp +62 899-7899-187", viewPin: "View pin on map", invoice: "Invoice", date: "Date", from: "From", billTo: "Bill to", shipVia: "Shipping", product: "Product", qty: "Qty", price: "Price", amount: "Amount", subtotal: "Subtotal", shipping: "Shipping", total: "Total", totalSoFar: "Total so far", feePending: "to be confirmed", notes: "Notes", payHow: "How to pay", status: { unpaid: "Unpaid", pending: "Payment being verified", paid: "Paid", failed: "Payment failed", refunded: "Refunded" }, loading: "Loading invoice…", notFound: "Invoice not found", notFoundText: "This invoice link is not valid. Please use the link from your order confirmation, or message us on WhatsApp.", error: "The invoice could not be loaded. Please check your connection and try again.", print: "Print", pdf: "Download PDF", making: "Preparing PDF…", thanks: "Thank you for shopping with Naturalife Bali.", back: "← Naturalife Bali" },
+    id: { thanksTitle: "Terima kasih, {name}!", thanksText: "Dukungan Anda sangat berarti bagi tim kecil kami di Bali. Semoga Anda menikmati setiap gigitannya — kami tak sabar menyiapkan pesanan Anda berikutnya.", contact: "naturalifebali.com · WhatsApp +62 899-7899-187", viewPin: "Lihat titik di peta", invoice: "Invoice", date: "Tanggal", from: "Dari", billTo: "Ditagihkan kepada", shipVia: "Pengiriman", product: "Produk", qty: "Jml", price: "Harga", amount: "Total", subtotal: "Subtotal", shipping: "Ongkos kirim", total: "Total", totalSoFar: "Total sementara", feePending: "menunggu konfirmasi", notes: "Catatan", payHow: "Cara pembayaran", status: { unpaid: "Belum dibayar", pending: "Pembayaran sedang diverifikasi", paid: "Lunas", failed: "Pembayaran gagal", refunded: "Dikembalikan" }, loading: "Memuat invoice…", notFound: "Invoice tidak ditemukan", notFoundText: "Link invoice ini tidak valid. Gunakan link dari konfirmasi pesanan Anda, atau hubungi kami lewat WhatsApp.", error: "Invoice gagal dimuat. Periksa koneksi internet lalu coba lagi.", print: "Cetak", pdf: "Unduh PDF", making: "Menyiapkan PDF…", thanks: "Terima kasih telah berbelanja di Naturalife Bali.", back: "← Naturalife Bali" },
+    ru: { thanksTitle: "Спасибо, {name}!", thanksText: "Ваша поддержка очень важна для нашей небольшой команды на Бали. Приятного аппетита — будем рады вашему следующему заказу.", contact: "naturalifebali.com · WhatsApp +62 899-7899-187", viewPin: "Точка на карте", invoice: "Счёт", date: "Дата", from: "Продавец", billTo: "Покупатель", shipVia: "Доставка", product: "Товар", qty: "Кол-во", price: "Цена", amount: "Сумма", subtotal: "Сумма товаров", shipping: "Доставка", total: "Итого", totalSoFar: "Предварительно", feePending: "уточняется", notes: "Примечание", payHow: "Как оплатить", status: { unpaid: "Не оплачен", pending: "Оплата проверяется", paid: "Оплачен", failed: "Ошибка оплаты", refunded: "Возврат" }, loading: "Загрузка счёта…", notFound: "Счёт не найден", notFoundText: "Ссылка недействительна. Используйте ссылку из подтверждения заказа или напишите нам в WhatsApp.", error: "Не удалось загрузить счёт. Проверьте подключение и попробуйте снова.", print: "Печать", pdf: "Скачать PDF", making: "Подготовка PDF…", thanks: "Спасибо за покупку в Naturalife Bali.", back: "← Naturalife Bali" }
   }[L];
   const COURIER = { jne_regular: "JNE", jne_trucking: "JNE Trucking (JTR)", gosend: "GoSend", grabexpress: "GrabExpress" };
   const esc = P.esc, money = P.money;
@@ -24,14 +24,18 @@
   function splitNotes(text) {
     const lines = String(text || "").split("\n");
     const tag = lines[0] && /^\[Ongkir (.+?):/.exec(lines[0]);
-    return { service: tag ? tag[1] : "", notes: (tag ? lines.slice(1) : lines).join("\n").trim() };
+    const rest = (tag ? lines.slice(1) : lines);
+    const pinLine = rest.find(l => /^\[Pin lokasi: https:\/\/maps\.google\.com\/\?q=[-0-9.,]+\]$/.test(l.trim()));
+    const pin = pinLine ? pinLine.trim().slice(13, -1) : "";
+    return { service: tag ? tag[1] : "", pin, notes: rest.filter(l => l !== pinLine).join("\n").trim() };
   }
 
   function render(o) {
     const status = TXT.status[o.payment_status] ? o.payment_status : "unpaid";
     const feeKnown = o.delivery_fee > 0;
     const total = feeKnown ? o.subtotal + o.delivery_fee : o.subtotal;
-    const { service, notes } = splitNotes(o.delivery_instructions);
+    const { service, notes, pin } = splitNotes(o.delivery_instructions);
+    const firstName = String(o.customer_name || "").trim().split(/\s+/)[0] || "";
     const courier = service || COURIER[o.preferred_courier] || o.preferred_courier || "—";
     document.title = TXT.invoice + " " + invNo(o.order_number) + " · Naturalife Bali";
     root.innerHTML =
@@ -40,7 +44,7 @@
       '<div class="title"><h1>' + esc(TXT.invoice) + "</h1><p>" + esc(invNo(o.order_number)) + "</p><p>" + esc(TXT.date) + ": " + esc(fmtDate(o.created_at)) + "</p>" +
       '<span class="badge ' + status + '">' + esc(TXT.status[status]) + "</span></div></header>" +
       '<section class="parties"><div><h2>' + esc(TXT.billTo) + "</h2><p><strong>" + esc(o.customer_name) + "</strong><br>" + esc(o.phone) + "<br>" + esc([o.address, o.city, o.postal_code].filter(Boolean).join(", ")) + "</p></div>" +
-      "<div><h2>" + esc(TXT.shipVia) + "</h2><p>" + esc(courier) + "</p></div></section>" +
+      "<div><h2>" + esc(TXT.shipVia) + "</h2><p>" + esc(courier) + "</p>" + (pin ? '<a class="pin-link no-pdf" href="' + esc(pin) + '" target="_blank" rel="noopener">' + esc(TXT.viewPin) + " ↗</a>" : "") + "</div></section>" +
       "<table><thead><tr><th>" + esc(TXT.product) + '</th><th class="n">' + esc(TXT.qty) + '</th><th class="n">' + esc(TXT.price) + '</th><th class="n">' + esc(TXT.amount) + "</th></tr></thead><tbody>" +
       o.items.map(i => "<tr><td>" + esc(i.name) + '</td><td class="n">' + i.qty + '</td><td class="n">' + esc(money(i.unit_price)) + '</td><td class="n">' + esc(money(i.line_total)) + "</td></tr>").join("") +
       "</tbody></table>" +
@@ -48,10 +52,11 @@
       "<div><span>" + esc(TXT.shipping) + "</span><span>" + (feeKnown ? esc(money(o.delivery_fee)) : esc(TXT.feePending)) + "</span></div>" +
       '<div class="grand"><span>' + esc(feeKnown ? TXT.total : TXT.totalSoFar) + "</span><span>" + esc(money(total)) + "</span></div></div>" +
       (notes ? '<div class="notes"><strong>' + esc(TXT.notes) + ":</strong> " + esc(notes) + "</div>" : "") +
+      '<section class="thanks"><h2>' + esc(TXT.thanksTitle.replace("{name}", firstName)) + "</h2><p>" + esc(TXT.thanksText) + "</p></section>" +
       (status === "paid" ? "" :
-        '<section class="pay"><h2>' + esc(TXT.payHow) + "</h2>" + P.methodsHtml(L, o.payment_method === "bank_transfer" ? "bank_transfer" : "qris", total) +
+        '<section class="pay no-pdf"><h2>' + esc(TXT.payHow) + "</h2>" + P.methodsHtml(L, o.payment_method === "bank_transfer" ? "bank_transfer" : "qris", total) +
         (feeKnown ? "" : '<p class="pay-note warn">' + esc(P.t(L, "feePendingNote")) + "</p>") + '<div class="pay-paid"></div></section>') +
-      '<p class="foot">' + esc(TXT.thanks) + "</p></article>";
+      '<p class="foot">' + esc(TXT.contact) + "</p></article>";
 
     let method = o.payment_method === "bank_transfer" ? "bank_transfer" : "qris";
     P.bindCopy(root);
@@ -80,14 +85,10 @@
       const canvas = await window.html2canvas(sheet, { scale: 2, backgroundColor: "#ffffff", useCORS: true, windowWidth: 820 });
       document.body.classList.remove("pdf-mode");
       const pdf = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
-      const pw = 210, ph = 297, margin = 10, w = pw - margin * 2, h = canvas.height * w / canvas.width;
-      const img = canvas.toDataURL("image/jpeg", 0.92);
-      let y = 0;
-      while (y < h) {
-        if (y > 0) pdf.addPage();
-        pdf.addImage(img, "JPEG", margin, margin - y, w, h);
-        y += ph - margin * 2;
-      }
+      const pw = 210, ph = 297, margin = 12;
+      let w = pw - margin * 2, h = canvas.height * w / canvas.width;
+      if (h > ph - margin * 2) { h = ph - margin * 2; w = canvas.width * h / canvas.height; }
+      pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", (pw - w) / 2, margin, w, h);
       pdf.save("Invoice-" + invNo(orderNumber) + ".pdf");
     } catch (e) {
       console.error("PDF failed", e);

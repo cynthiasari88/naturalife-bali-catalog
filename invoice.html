@@ -47,6 +47,11 @@
   .totals span:last-child{font-variant-numeric:tabular-nums;text-align:right}
   .totals .grand{border-top:1px solid var(--line);margin-top:6px;padding-top:12px;font-size:17px;font-weight:700;color:var(--green)}
   .notes{margin-top:18px;padding:12px 14px;border-radius:9px;background:var(--ivory);font-size:12.5px;color:var(--muted);white-space:pre-line}
+  .thanks{margin-top:24px;padding:20px 22px;border-radius:12px;background:linear-gradient(135deg,#eef4ec,#f7f3e8);border:1px solid #dfe8da}
+  .thanks h2{margin:0 0 6px;font:600 20px "Playfair Display",Georgia,serif;color:var(--green)}
+  .thanks p{margin:0;font-size:13px;line-height:1.7;color:#4c5b52}
+  .pin-link{display:inline-block;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--green)}
+  body.pdf-mode .no-pdf{display:none!important}
   .pay{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
   .foot{margin-top:26px;font-size:11.5px;color:var(--muted);text-align:center}
   .state{max-width:520px;margin:12vh auto;text-align:center;color:var(--muted)}
@@ -61,7 +66,7 @@
   }
   @media print{
     body{background:#fff;padding:0}
-    .toolbar,.pay-paid,.pay-save,.pay-copy,.pay-tabs{display:none!important}
+    .toolbar,.no-pdf{display:none!important}
     .sheet{border:0;box-shadow:none;padding:0}
     .pay-method[hidden]{display:block!important}
   }
@@ -79,6 +84,6 @@
   <main id="invoice"><div class="state"><p id="loading-text">Loading invoice…</p></div></main>
 </div>
 <script src="payment-core.js?v=2"></script>
-<script src="invoice.js?v=1"></script>
+<script src="invoice.js?v=2"></script>
 </body>
 </html>
