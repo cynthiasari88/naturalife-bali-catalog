@@ -63,6 +63,7 @@
       { key: "hero_bg", type: "color", label: "Hero background color", show: t => t.show_hero && t.hero_style === "solid" },
       { key: "hero_image", type: "image", label: "Hero photo", hint: "Landscape JPG, PNG or WebP, ideally 2400 px wide (max 20 MB). Sizes for desktop, tablet and phone are created automatically.", show: t => t.show_hero && t.hero_style === "image" },
       { key: "hero_overlay", type: "range", label: "Photo darkening", hint: "Keeps the headline readable on busy photos.", min: 0, max: 85, unit: "%", show: t => t.show_hero && (t.hero_style === "image" || t.hero_style === "slides") },
+      { key: "hero_text", type: "toggle", label: "Show headline, text and button", hint: "Turn off to show only the photos. The headline stays readable for Google and screen readers.", show: t => t.show_hero },
       { key: "hero_art", type: "toggle", label: "Show decorative card illustration", show: t => t.show_hero }
     ] },
     { id: "sections", title: "Homepage sections", desc: "Choose which parts of the homepage are visible.", fields: [

@@ -46,7 +46,7 @@
     corners: "soft", button_shape: "pill", card_style: "bordered", container: "standard", spacing: "comfortable", sticky_header: true,
     columns_desktop: "4", columns_mobile: "2", image_ratio: "fixed", image_fit: "cover", add_button: "soft",
     show_filters: true, show_search: true, show_descriptions: true, hover_effects: true,
-    show_hero: true, hero_style: "gradient", hero_bg: "#e9eee3", hero_image: "", hero_image_md: "", hero_image_sm: "", hero_focus_x: 50, hero_focus_y: 50, hero_slides: [], hero_slide_count: "3", hero_slide_interval: "6", hero_overlay: 45, hero_art: true,
+    show_hero: true, hero_style: "gradient", hero_bg: "#e9eee3", hero_image: "", hero_image_md: "", hero_image_sm: "", hero_focus_x: 50, hero_focus_y: 50, hero_slides: [], hero_slide_count: "3", hero_slide_interval: "6", hero_overlay: 45, hero_art: true, hero_text: true,
     show_announcement: true, show_slideshow: true, show_education: true, show_faq: true,
     custom_css: ""
   };
@@ -160,6 +160,7 @@
     var hide = [];
     if (!t.show_hero) hide.push("hero");
     if (!t.hero_art) hide.push("art");
+    if (!t.hero_text) hide.push("herotext");
     if (!t.show_announcement) hide.push("announcement");
     if (!t.show_slideshow) hide.push("slideshow");
     if (!t.show_education) hide.push("education");
