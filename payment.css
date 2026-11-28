@@ -65,3 +65,4 @@ body.pdf-mode .pay-method[hidden]{display:grid!important;margin-top:12px}
 .pay-back{border:0;background:none;padding:6px 0;font:600 13px "DM Sans",Arial,sans-serif;color:var(--muted,#6f7b73);cursor:pointer}
 .pay-back:disabled,.pay-confirm .primary-button:disabled{opacity:.6;cursor:progress}
 .pay-confirm>small:not(.pay-confirm-note){font-size:11px;color:var(--muted,#6f7b73);line-height:1.5}
+.pay-discount span:last-child{color:#2f6a45;font-weight:600}

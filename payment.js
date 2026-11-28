@@ -27,7 +27,7 @@
       return { name: p.name || "Item", qty, line_total: (Number(p.price) || 0) * qty };
     });
   }
-  const amountDue = o => (o.feeKnown ? o.subtotal + o.fee : o.subtotal);
+  const amountDue = o => o.subtotal - (o.discount || 0) + (o.feeKnown ? o.fee : 0);
 
   function head(L, eyebrow, title) {
     return '<div class="drawer-heading pay-head"><div><p class="eyebrow">' + e(eyebrow) + "</p><h2>" + e(title) + "</h2></div>" +
@@ -38,6 +38,7 @@
     return '<div class="pay-card"><h3>' + e(P.t(L, "summary")) + "</h3>" +
       '<ul class="pay-items">' + o.items.map(i => "<li><span>" + e(i.name) + " × " + i.qty + "</span><span>" + e(P.money(i.line_total)) + "</span></li>").join("") + "</ul>" +
       '<div class="pay-line"><span>' + e(P.t(L, "subtotal")) + "</span><span>" + e(P.money(o.subtotal)) + "</span></div>" +
+      (o.discount ? '<div class="pay-line pay-discount"><span>' + e(P.t(L, "voucherDiscount")) + " (" + e(o.voucher) + ")</span><span>−" + e(P.money(o.discount)) + "</span></div>" : "") +
       '<div class="pay-line"><span>' + e(P.t(L, "shipping")) + (o.courier ? " · " + e(o.courier) : "") + "</span><span>" + (o.feeKnown ? e(P.money(o.fee)) : e(P.t(L, "shippingPending"))) + "</span></div>" +
       '<div class="pay-line pay-total"><span>' + e(P.t(L, o.feeKnown ? "total" : "productsOnly")) + "</span><strong>" + e(P.money(amountDue(o))) + "</strong></div>" +
       (o.feeKnown ? "" : '<p class="pay-note warn">' + e(P.t(L, "feeLaterNote", { courier: o.courier || "" })) + "</p>") + "</div>";
@@ -86,6 +87,7 @@
       const result = await window.NLCheckout.send({ ...o.payload, payment_method: o.method, payment_confirmed: true, reported_amount: amountDue(o), proof });
       o.result = result;
       if (typeof result.delivery_fee === "number" && result.shipping_confirmed) { o.fee = result.delivery_fee; o.feeKnown = true; }
+      if (typeof result.discount === "number") { o.discount = result.discount; if (!result.discount) o.voucher = ""; }
       o.stage = "done";
     } catch (err) {
       console.error(err);
@@ -108,7 +110,10 @@
       const chosen = form.querySelector('input[name="ship_option"]:checked');
       const courier = chosen ? ((chosen.closest("label").querySelector("strong") || {}).textContent || "") : "";
       const items = snapshotItems();
+      const sub = items.reduce((sum, i) => sum + i.line_total, 0);
+      const v = window.NLVoucher ? window.NLVoucher.info() : null;
       current = {
+        discount: v ? window.NLVoucher.discount(sub) : 0, voucher: v ? v.code : "",
         payload, items, courier,
         subtotal: items.reduce((sum, i) => sum + i.line_total, 0),
         fee: ship ? Number(ship.price) || 0 : 0, feeKnown: !!ship,

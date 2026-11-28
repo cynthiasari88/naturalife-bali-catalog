@@ -55,3 +55,16 @@
 .pin-marker span{position:absolute;left:3px;top:0;width:24px;height:24px;border-radius:50% 50% 50% 0;background:#c0392b;transform:rotate(-45deg);box-shadow:0 3px 8px rgba(0,0,0,.35);border:2px solid #fff}
 .pin-marker span::after{content:"";position:absolute;left:7px;top:7px;width:6px;height:6px;border-radius:50%;background:#fff}
 @media(max-width:540px){.checkout-dialog .pin-map{height:240px}}
+/* voucher */
+.checkout-dialog .voucher-box{display:grid;gap:7px}
+.checkout-dialog .voucher-box>label{font-size:12px;font-weight:600;color:var(--muted,#78837b)}
+.checkout-dialog .voucher-row{display:flex;gap:8px}
+.checkout-dialog .voucher-row input{flex:1;min-width:0;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.checkout-dialog .voucher-btn{flex-shrink:0;border:1px solid var(--green,#244b3c);background:#fff;color:var(--green,#244b3c);border-radius:9px;padding:0 18px;font:600 13px "DM Sans",Arial,sans-serif;cursor:pointer}
+.checkout-dialog .voucher-btn:disabled{opacity:.6;cursor:progress}
+.checkout-dialog .voucher-box.is-applied .voucher-row input{background:#eef6ef;border-color:#9fc8a9;color:#2f6a45}
+.checkout-dialog .voucher-msg{font-size:11.5px;line-height:1.5}
+.checkout-dialog .voucher-msg:empty{display:none}
+.checkout-dialog .voucher-box.is-applied .voucher-msg{color:#2f6a45;font-weight:600}
+.checkout-dialog .voucher-box.is-error .voucher-msg{color:#a24b3e}
+.checkout-dialog .discount-row strong{color:#2f6a45}

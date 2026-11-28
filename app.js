@@ -242,6 +242,7 @@ $("#checkout-form").onsubmit = async event => {
     postal_code: addr ? addr.postal_code : String(data.get("postal_code") || "").trim(),
     preferred_courier: courierMap[data.get("courier")] || "jne_regular",
     ...(window.NLShipping ? window.NLShipping.payload() : {}),
+    ...(window.NLVoucher ? window.NLVoucher.payload() : {}),
     fulfillment_type: "delivery",
     delivery_instructions: String(data.get("delivery_notes") || "").trim(),
     payment_method: data.get("payment_method") === "QRIS" ? "qris" : "bank_transfer",
