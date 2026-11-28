@@ -46,7 +46,7 @@
     corners: "soft", button_shape: "pill", card_style: "bordered", container: "standard", spacing: "comfortable", sticky_header: true,
     columns_desktop: "4", columns_mobile: "2", image_ratio: "fixed", image_fit: "cover", add_button: "soft",
     show_filters: true, show_search: true, show_descriptions: true, hover_effects: true,
-    show_hero: true, hero_style: "gradient", hero_bg: "#e9eee3", hero_image: "", hero_image_md: "", hero_image_sm: "", hero_focus_x: 50, hero_focus_y: 50, hero_overlay: 45, hero_art: true,
+    show_hero: true, hero_style: "gradient", hero_bg: "#e9eee3", hero_image: "", hero_image_md: "", hero_image_sm: "", hero_focus_x: 50, hero_focus_y: 50, hero_slides: [], hero_slide_count: "3", hero_slide_interval: "6", hero_overlay: 45, hero_art: true,
     show_announcement: true, show_slideshow: true, show_education: true, show_faq: true,
     custom_css: ""
   };
@@ -55,7 +55,7 @@
     text_size: ["standard", "large"], corners: ["square", "soft", "rounded"], button_shape: ["pill", "rounded", "square"],
     card_style: ["bordered", "elevated", "flat"], container: ["narrow", "standard", "full"], spacing: ["compact", "comfortable", "spacious"],
     columns_desktop: ["2", "3", "4", "5"], columns_mobile: ["1", "2"], image_ratio: ["fixed", "square", "portrait", "landscape"],
-    image_fit: ["cover", "contain"], add_button: ["soft", "solid", "outline"], hero_style: ["gradient", "solid", "image"]
+    image_fit: ["cover", "contain"], add_button: ["soft", "solid", "outline"], hero_style: ["gradient", "solid", "image", "slides"], hero_slide_count: ["2", "3", "4", "5", "6"], hero_slide_interval: ["4", "6", "8", "10"]
   };
   var COLOR_KEYS = ["primary", "accent", "background", "surface", "text", "header_bg", "footer_bg", "footer_text", "announce_bg", "announce_text", "hero_bg"];
   // Keys a preset controls. Everything else (catalog, sections, hero image…) is kept when switching presets.
@@ -85,11 +85,28 @@
   function rgba(h, a) { return "rgba(" + rgb(h).join(",") + "," + a + ")"; }
 
   /* ---------- theme model ---------- */
+  var URL_RE = /^https:\/\/[^\s"'()<>\\]+$/i;
+  /** Hero slideshow: up to 6 slides, each { lg, md, sm, fx, fy } (desktop / tablet / phone photo + focus point). */
+  function normSlides(v) {
+    if (!Array.isArray(v)) return [];
+    return v.slice(0, 6).map(function (x) {
+      x = x && typeof x === "object" ? x : {};
+      var url = function (u) { return URL_RE.test(String(u || "")) ? String(u) : ""; };
+      var pct = function (n) { n = Number(n); return Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : 50; };
+      return { lg: url(x.lg), md: url(x.md), sm: url(x.sm), fx: pct(x.fx), fy: pct(x.fy) };
+    });
+  }
+  /** Slides that will actually be shown on the storefront. */
+  function activeSlides(t) {
+    return (t.hero_slides || []).slice(0, Number(t.hero_slide_count) || 0).filter(function (x) { return x.lg; });
+  }
+
   function normalize(input) {
     var t = {}, src = input && typeof input === "object" ? input : {};
     Object.keys(DEFAULTS).forEach(function (k) {
       var d = DEFAULTS[k], v = src[k];
-      if (COLOR_KEYS.indexOf(k) > -1) t[k] = isHex(v) ? String(v).toLowerCase() : d;
+      if (k === "hero_slides") t[k] = normSlides(v);
+      else if (COLOR_KEYS.indexOf(k) > -1) t[k] = isHex(v) ? String(v).toLowerCase() : d;
       else if (ENUMS[k]) t[k] = ENUMS[k].indexOf(String(v)) > -1 ? String(v) : d;
       else if (typeof d === "boolean") t[k] = typeof v === "boolean" ? v : d;
       else if (k === "hero_overlay") t[k] = Number.isFinite(Number(v)) && v !== "" && v !== null ? Math.max(0, Math.min(85, Math.round(Number(v)))) : d;
@@ -109,7 +126,7 @@
     var p = t.primary, bg = t.background, s = t.surface, tx = t.text;
     var hf = FONTS.heading[t.heading_font], radius = { square: [2, 3, 4], soft: [13, 9, 15], rounded: [22, 14, 26] }[t.corners];
     var heroBase = t.hero_style === "solid" ? t.hero_bg : bg;
-    var heroDark = t.hero_style === "image" || luminance(heroBase) < 0.2;
+    var heroDark = t.hero_style === "image" || t.hero_style === "slides" || luminance(heroBase) < 0.2;
     var headerDark = luminance(t.header_bg) < 0.2;
     var onHeader = readableOn(t.header_bg, tx);
     var vars = {
@@ -154,7 +171,7 @@
       "data-nl-theme": t.preset || "custom", "data-corners": t.corners, "data-buttons": t.button_shape, "data-cards": t.card_style,
       "data-container": t.container, "data-spacing": t.spacing, "data-text-size": t.text_size, "data-sticky": t.sticky_header ? "on" : "off",
       "data-mobile-columns": t.columns_mobile, "data-img-ratio": t.image_ratio, "data-img-fit": t.image_fit, "data-add-button": t.add_button,
-      "data-hero-style": t.hero_style === "image" && !t.hero_image ? "gradient" : t.hero_style,
+      "data-hero-style": (t.hero_style === "image" && !t.hero_image) || (t.hero_style === "slides" && !activeSlides(t).length) ? "gradient" : t.hero_style,
       "data-hide": hide.join(" "), "data-hover": t.hover_effects ? "on" : "off"
     };
     return { vars: vars, attrs: attrs };
@@ -194,12 +211,14 @@
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", t.header_bg === "#ffffff" || luminance(t.header_bg) > 0.8 ? t.primary : t.header_bg);
     if (opts && opts.cache) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(t)); } catch (e) { /* storage unavailable */ } }
+    window.NaturalifeTheme.current = t;
+    try { document.dispatchEvent(new CustomEvent("nl-theme", { detail: t })); } catch (e) { /* old browsers */ }
     return t;
   }
 
   window.NaturalifeTheme = {
     SLUG: SLUG, DEFAULTS: DEFAULTS, PRESETS: PRESETS, FONTS: FONTS, ENUMS: ENUMS, STYLE_KEYS: STYLE_KEYS, COLOR_KEYS: COLOR_KEYS,
-    normalize: normalize, derive: derive, loadFonts: loadFonts, contrast: contrast, readableOn: readableOn, isHex: isHex, mix: mix
+    normalize: normalize, derive: derive, activeSlides: activeSlides, loadFonts: loadFonts, contrast: contrast, readableOn: readableOn, isHex: isHex, mix: mix
   };
   if (configOnly) return;
 

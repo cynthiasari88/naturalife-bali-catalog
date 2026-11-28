@@ -56,10 +56,13 @@
     ] },
     { id: "hero", title: "Homepage hero", desc: "The welcome area at the top of the homepage.", fields: [
       { key: "show_hero", type: "toggle", label: "Show hero section", hint: "Hidden automatically when a published Visual Builder homepage is live." },
-      { key: "hero_style", type: "seg", label: "Background", show: t => t.show_hero, options: opts(["gradient", "Soft gradient"], ["solid", "Solid color"], ["image", "Photo"]) },
+      { key: "hero_style", type: "seg", label: "Background", show: t => t.show_hero, options: opts(["gradient", "Soft gradient"], ["solid", "Solid color"], ["image", "Photo"], ["slides", "Slideshow"]) },
+      { key: "hero_slide_count", type: "seg", label: "Number of slides", show: t => t.show_hero && t.hero_style === "slides", options: opts(["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"]) },
+      { key: "hero_slide_interval", type: "seg", label: "Change slide every", show: t => t.show_hero && t.hero_style === "slides", options: opts(["4", "4 s"], ["6", "6 s"], ["8", "8 s"], ["10", "10 s"]) },
+      { key: "hero_slides", type: "slides", label: "Slide photos", show: t => t.show_hero && t.hero_style === "slides" },
       { key: "hero_bg", type: "color", label: "Hero background color", show: t => t.show_hero && t.hero_style === "solid" },
       { key: "hero_image", type: "image", label: "Hero photo", hint: "Landscape JPG, PNG or WebP, ideally 2400 px wide (max 20 MB). Sizes for desktop, tablet and phone are created automatically.", show: t => t.show_hero && t.hero_style === "image" },
-      { key: "hero_overlay", type: "range", label: "Photo darkening", hint: "Keeps the headline readable on busy photos.", min: 0, max: 85, unit: "%", show: t => t.show_hero && t.hero_style === "image" },
+      { key: "hero_overlay", type: "range", label: "Photo darkening", hint: "Keeps the headline readable on busy photos.", min: 0, max: 85, unit: "%", show: t => t.show_hero && (t.hero_style === "image" || t.hero_style === "slides") },
       { key: "hero_art", type: "toggle", label: "Show decorative card illustration", show: t => t.show_hero }
     ] },
     { id: "sections", title: "Homepage sections", desc: "Choose which parts of the homepage are visible.", fields: [
@@ -111,6 +114,16 @@
         '<label class="ap-sublabel" for="' + id + '-url">Or paste an image link</label><input type="url" id="' + id + '-url" data-key="' + f.key + '" value="' + esc(v) + '" placeholder="https://…">' +
         '<small class="ap-hint" id="' + id + '-status">' + esc(f.hint || "") + "</small></div>";
     }
+    if (f.type === "slides") {
+      return '<div class="ap-field ap-slides-field" data-field="' + f.key + '"><span class="ap-label">' + esc(f.label) + "</span>" +
+        '<div class="ap-size-guide"><strong>Photo size guide</strong><ul>' +
+        "<li><b>Best:</b> landscape <b>2400 × 1350 px</b> (16:9) or larger.</li>" +
+        "<li><b>Minimum:</b> 1600 px wide — smaller photos look soft on big screens.</li>" +
+        "<li>JPG, PNG or WebP, up to <b>20 MB</b> each. Use similar brightness on every slide so the headline stays readable.</li>" +
+        "<li>The headline sits on the <b>left</b> — keep the main subject in the centre or right, then click the photo to set its focus point.</li>" +
+        "<li>Tablet (1600 px) and phone (1080 × 1920 portrait) versions are made automatically.</li></ul></div>" +
+        '<div id="ap-slides"></div></div>';
+    }
     if (f.type === "code") {
       return '<div class="ap-field" data-field="' + f.key + '"><label for="' + id + '">' + esc(f.label) + '</label><textarea id="' + id + '" data-key="' + f.key + '" rows="7" spellcheck="false" placeholder=".product-card h3 { letter-spacing: .2px; }">' + esc(v) + "</textarea>" + hint + "</div>";
     }
@@ -145,6 +158,7 @@
 
   /* ---------- live state ---------- */
   function refresh() {
+    renderSlides();
     Object.values(FIELD).forEach(f => {
       const el = document.querySelector('[data-field="' + f.key + '"]');
       if (el) el.hidden = f.show ? !f.show(state) : false;
@@ -188,7 +202,11 @@
 
   function isDirty() { return !!(saved && state && !same(saved, state)); }
   /** A hero photo published before automatic sizing existed has no tablet/phone versions yet. */
-  function needsHeroSizes() { return !!(state && state.hero_style === "image" && state.hero_image && (!state.hero_image_md || !state.hero_image_sm)); }
+  function needsHeroSizes() {
+    if (!state) return false;
+    if (state.hero_style === "slides") return T.activeSlides(state).some(x => !x.md || !x.sm);
+    return !!(state.hero_style === "image" && state.hero_image && (!state.hero_image_md || !state.hero_image_sm));
+  }
   function refreshStatus(text, tone) {
     const el = $("#ap-status"); if (!el) return;
     const dirty = isDirty(), sizes = needsHeroSizes();
@@ -299,16 +317,83 @@
     }
     throw new Error("Upload failed: " + (lastError?.message || "storage did not accept the file."));
   }
-  async function makeAndUploadVariants(source, kinds) {
+  async function makeAndUploadVariants(source, kinds, fx = state.hero_focus_x, fy = state.hero_focus_y) {
     const { img, done } = await loadImage(source);
     try {
       const stamp = Date.now(), out = {};
       for (const kind of kinds) {
-        const blob = await renderVariant(img, kind, state.hero_focus_x, state.hero_focus_y);
+        const blob = await renderVariant(img, kind, fx, fy);
         out[kind] = await uploadBlob(blob, "theme/hero-" + stamp + "-" + kind + ".jpg");
       }
       return out;
     } finally { done(); }
+  }
+
+  /* ---------- hero slideshow editor ---------- */
+  const slideSources = {}; // original photo per slide (by desktop URL), used to re-crop the phone version
+  let slidesSig = "";
+  function slideList() {
+    const n = Number(state.hero_slide_count) || 3;
+    const list = clone(state.hero_slides || []);
+    while (list.length < n) list.push({ lg: "", md: "", sm: "", fx: 50, fy: 50 });
+    return list;
+  }
+  function renderSlides(force) {
+    const box = $("#ap-slides");
+    if (!box || !state) return;
+    const list = slideList(), n = Number(state.hero_slide_count) || 3;
+    const sig = JSON.stringify([list.slice(0, n), n]);
+    if (!force && sig === slidesSig) return;
+    slidesSig = sig;
+    box.innerHTML = list.slice(0, n).map((sl, i) =>
+      '<div class="ap-slide" data-slide="' + i + '">' +
+      '<div class="ap-slide-head"><strong>Slide ' + (i + 1) + "</strong>" +
+      '<span class="ap-slide-state ' + (sl.lg ? "ok" : "") + '">' + (sl.lg ? (sl.md && sl.sm ? "✓ Ready for every screen" : "Sizes made when you publish") : "No photo yet") + "</span>" +
+      '<span class="ap-slide-move"><button type="button" class="ap-icon-btn" data-slide-up="' + i + '"' + (i === 0 ? " disabled" : "") + ' aria-label="Move slide ' + (i + 1) + ' up">↑</button>' +
+      '<button type="button" class="ap-icon-btn" data-slide-down="' + i + '"' + (i === n - 1 ? " disabled" : "") + ' aria-label="Move slide ' + (i + 1) + ' down">↓</button></span></div>' +
+      '<div class="ap-image-box ap-focus" data-slide-box="' + i + '" title="Click the most important part of the photo">' +
+      (sl.lg ? '<img src="' + esc(sl.lg) + '" alt="Slide ' + (i + 1) + ' photo"><span class="ap-focus-dot" style="left:' + sl.fx + "%;top:" + sl.fy + '%"></span>' : "<p>No photo yet</p>") + "</div>" +
+      '<div class="ap-image-actions"><label class="btn light ap-upload">' + (sl.lg ? "Replace photo" : "Upload photo") + '<input type="file" data-slide-file="' + i + '" accept="image/jpeg,image/png,image/webp" hidden></label>' +
+      (sl.lg ? '<button type="button" class="btn light" data-slide-remove="' + i + '">Remove</button>' : "") + "</div>" +
+      '<small class="ap-hint" data-slide-status="' + i + '"></small></div>').join("");
+  }
+  function setSlides(list) { setValue("hero_slides", list); renderSlides(true); refresh(); }
+
+  async function uploadSlide(i, file) {
+    const status = document.querySelector('[data-slide-status="' + i + '"]');
+    try {
+      if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("Please choose a JPG, PNG or WebP photo.");
+      if (file.size > 20 * 1024 * 1024) throw new Error("This photo is larger than 20 MB. Export it smaller and try again.");
+      status.textContent = "Creating sizes for desktop, tablet and phone…";
+      const probe = await loadImage(file); const w = probe.img.naturalWidth, h = probe.img.naturalHeight; probe.done();
+      const urls = await makeAndUploadVariants(file, ["lg", "md", "sm"], 50, 50);
+      slideSources[urls.lg] = file;
+      const list = slideList();
+      list[i] = { lg: urls.lg, md: urls.md, sm: urls.sm, fx: 50, fy: 50 };
+      setSlides(list);
+      const note = document.querySelector('[data-slide-status="' + i + '"]');
+      if (note) note.textContent = w < 1600 ? "⚠️ This photo is only " + w + " × " + h + " px — it may look soft on large screens. 2400 × 1350 px is ideal." : "Photo ready (" + w + " × " + h + " px). Click it to set the focus point.";
+    } catch (err) { if (status) status.textContent = err.message; }
+  }
+
+  function onSlidesClick(e) {
+    const t = e.target;
+    const up = t.closest("[data-slide-up]"), down = t.closest("[data-slide-down]"), rm = t.closest("[data-slide-remove]"), box = t.closest("[data-slide-box]");
+    if (up || down) {
+      const i = Number((up || down).dataset[up ? "slideUp" : "slideDown"]), j = up ? i - 1 : i + 1, list = slideList();
+      [list[i], list[j]] = [list[j], list[i]];
+      setSlides(list);
+    } else if (rm) {
+      const list = slideList(); list[Number(rm.dataset.slideRemove)] = { lg: "", md: "", sm: "", fx: 50, fy: 50 }; setSlides(list);
+    } else if (box) {
+      const i = Number(box.dataset.slideBox), list = slideList(), img = box.querySelector("img");
+      if (!img || !list[i].lg) return;
+      const r = img.getBoundingClientRect();
+      list[i].fx = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 100);
+      list[i].fy = Math.round(Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)) * 100);
+      list[i].sm = ""; // phone crop is re-made around the new focus point when publishing
+      setSlides(list);
+    }
   }
 
   /* ---------- preview ---------- */
@@ -376,6 +461,25 @@
     btn.disabled = true;
     refreshStatus("Publishing…", "busy");
     try {
+      if (state.hero_style === "slides" && needsHeroSizes()) {
+        refreshStatus("Optimizing slide photos for phones and tablets…", "busy");
+        const list = clone(state.hero_slides);
+        for (const sl of list.slice(0, Number(state.hero_slide_count))) {
+          if (!sl.lg || (sl.md && sl.sm)) continue;
+          try {
+            const source = slideSources[sl.lg] || await fetch(sl.lg, { mode: "cors" }).then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); });
+            slideSources[sl.lg] = source;
+            const urls = await makeAndUploadVariants(source, [!sl.md && "md", !sl.sm && "sm"].filter(Boolean), sl.fx, sl.fy);
+            if (urls.md) sl.md = urls.md;
+            if (urls.sm) sl.sm = urls.sm;
+          } catch (err) {
+            console.warn("Slide optimisation skipped:", err);
+            say("#appearance-message", "A slide photo could not be resized automatically. It is still published; upload it again to create phone sizes.");
+          }
+        }
+        state.hero_slides = list;
+        refreshStatus("Publishing…", "busy");
+      }
       if (state.hero_style === "image" && state.hero_image && (!state.hero_image_md || !state.hero_image_sm)) {
         refreshStatus("Optimizing the hero photo for phones and tablets…", "busy");
         try {
@@ -419,6 +523,16 @@
     form.addEventListener("change", e => { if (e.target.type !== "file") onInput(e); });
     form.addEventListener("focusout", onHexBlur);
     form.addEventListener("submit", e => e.preventDefault());
+    form.addEventListener("click", e => { if (e.target.closest("#ap-slides")) onSlidesClick(e); });
+    form.addEventListener("change", e => { const f = e.target.closest("[data-slide-file]"); if (f && f.files[0]) { uploadSlide(Number(f.dataset.slideFile), f.files[0]); f.value = ""; } });
+    form.addEventListener("change", e => {
+      if (e.target.name !== "hero_style" || e.target.value !== "slides") return;
+      if (!T.activeSlides(state).length && state.hero_image) {
+        const list = slideList();
+        list[0] = { lg: state.hero_image, md: state.hero_image_md, sm: state.hero_image_sm, fx: state.hero_focus_x, fy: state.hero_focus_y };
+        setSlides(list);
+      }
+    });
     form.addEventListener("click", e => {
       const p = e.target.closest("[data-preset]"); if (p) applyPreset(p.dataset.preset);
       if (e.target.id === "ap-hero_image-remove") { heroSource = null; ["hero_image", "hero_image_md", "hero_image_sm"].forEach(k => setValue(k, "")); syncInputs(); refresh(); }
